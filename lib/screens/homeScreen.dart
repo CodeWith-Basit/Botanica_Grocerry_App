@@ -1,6 +1,5 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/productDetailscreen.dart';
-import 'package:botanica/screens/profileScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,5 +1,4 @@
 import 'package:botanica/screens/SignupScreen.dart';
-import 'package:botanica/screens/homeScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:flutter/material.dart';
