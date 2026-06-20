@@ -538,7 +538,7 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                             ],
                           ),
                         ),
-                        SizedBox(width: 25,),
+                        SizedBox(width: 25),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xff006E2F),
@@ -546,7 +546,10 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                           ),
                           onPressed: () {},
                           icon: Icon(Icons.shopping_basket_outlined),
-                          label: Text("Add to Cart", style: TextStyle(fontSize: 16),),
+                          label: Text(
+                            "Add to Cart",
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ],
                     ),
