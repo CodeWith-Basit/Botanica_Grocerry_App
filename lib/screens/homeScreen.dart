@@ -1,7 +1,9 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/productDetailscreen.dart';
+import 'package:botanica/screens/savedScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
+import 'package:botanica/widgets/module.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:botanica/widgets/bannerSlider.dart';
 import 'package:botanica/widgets/category.dart';
@@ -9,8 +11,36 @@ import 'package:botanica/widgets/discountCart.dart';
 import 'package:botanica/widgets/productCart.dart';
 import 'package:flutter/material.dart';
 
-class Homescreen extends StatelessWidget {
+class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+  void _addToCart(String title, String img, double price) {
+    final alreadyExists = cart.any((item) => item.title == title);
+    if (alreadyExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title is already in your cart.'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      setState(() {
+        cart.add(Module(title: title, img: img, price: price, count: 1));
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title added to cart successfully!'),
+          backgroundColor: const Color(0xFF53B175),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +145,7 @@ class Homescreen extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) => const Signinscreen(),
+                      builder: (context) =>  Signinscreen(),
                     ),
                   );
                 },
@@ -149,7 +179,15 @@ class Homescreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
+            child: IconButton(
+              icon: Icon(Icons.favorite_outlined, color: Colors.red),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Savedscreen()),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -360,6 +398,8 @@ class Homescreen extends StatelessWidget {
                         title: "Egg",
                         weight: "12 pack",
                         price: "\$7.99",
+                        onAddToCart: () =>
+                            _addToCart("Egg", "assets/images/egg.jpg", 7.99),
                       ),
                     ),
                   ),
@@ -391,6 +431,11 @@ class Homescreen extends StatelessWidget {
                         title: "Fresh Apples",
                         weight: "1kg Bag",
                         price: "\$5.99",
+                        onAddToCart: () => _addToCart(
+                          "Fresh Apples",
+                          "assets/images/apple.jpg",
+                          5.99,
+                        ),
                       ),
                     ),
                   ),
@@ -426,6 +471,11 @@ class Homescreen extends StatelessWidget {
                         title: "Organic Milk",
                         weight: "1 Liter",
                         price: "\$2.99",
+                        onAddToCart: () => _addToCart(
+                          "Organic Milk",
+                          "assets/images/milk.jpg",
+                          2.99,
+                        ),
                       ),
                     ),
                   ),
@@ -457,6 +507,11 @@ class Homescreen extends StatelessWidget {
                         title: "Fresh Broccoli",
                         weight: "500g",
                         price: "\$1.99",
+                        onAddToCart: () => _addToCart(
+                          "Fresh Broccoli",
+                          "assets/images/borocli.jpg",
+                          1.99,
+                        ),
                       ),
                     ),
                   ),

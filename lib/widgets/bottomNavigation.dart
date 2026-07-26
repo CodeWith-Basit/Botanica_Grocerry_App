@@ -1,7 +1,7 @@
+import 'package:botanica/screens/cartScreen.dart';
 import 'package:botanica/screens/exploreScreen.dart';
 import 'package:botanica/screens/homeScreen.dart';
 import 'package:botanica/screens/profileScreen.dart';
-import 'package:botanica/screens/savedScreen.dart';
 import 'package:botanica/screens/shopScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,7 @@ class _BottomnavigationState extends State<Bottomnavigation> {
       const Homescreen(),
       const Shopscreen(),
       const Explorescreen(),
-      const Savedscreen(),
+      const Cartscreen(),
       const Profilescreen(),
     ];
     return PopScope(
@@ -66,10 +66,13 @@ class _BottomnavigationState extends State<Bottomnavigation> {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
               icon: Icon(Icons.storefront_outlined),
-              label: 'Shop',
+              label: 'Category',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Explore'),
-            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ),

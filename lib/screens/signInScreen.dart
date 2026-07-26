@@ -1,8 +1,62 @@
+import 'package:botanica/widgets/bottomNavigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Signinscreen extends StatelessWidget {
-  const Signinscreen({super.key});
+class Signinscreen extends StatefulWidget {
+  Signinscreen({super.key});
+
+  @override
+  State<Signinscreen> createState() => _SigninscreenState();
+}
+
+class _SigninscreenState extends State<Signinscreen> {
+  bool _obscureText = true;
+
+  TextEditingController emailController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
+
+  login(context) async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    try {
+      if (email.isEmpty || password.isEmpty) {
+        print('Please fill in all fields');
+        return;
+      }
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      if (credential.user != null) {
+        print('User logged in successfully');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => Bottomnavigation()),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Logged in successfully',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            backgroundColor: Color(0xFF388E3C),
+          ),
+        );
+      } else {
+        print('Failed to log in user');
+      }
+    } catch (e) {
+      print('Error logging in: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Invalid email or password $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +114,8 @@ class Signinscreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: TextField(
+                child: TextFormField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     hintText: "abc123@gmail.com",
                     prefixIcon: Icon(Icons.email),
@@ -80,14 +135,27 @@ class Signinscreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: TextField(
+                child: TextFormField(
+                  obscureText: _obscureText,
+                  controller: passwordController,
                   decoration: InputDecoration(
                     hintText: "Enter Password",
                     prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility_sharp
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    suffixIcon: Icon(Icons.remove_red_eye_outlined),
                   ),
                 ),
               ),
@@ -107,27 +175,26 @@ class Signinscreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff006E2F),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "Sign In",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff006E2F),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  onPressed: () async {
+                    await login(context);
+                  },
+                  child: const Text(
+                    "Sign In",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

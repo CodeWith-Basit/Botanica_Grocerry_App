@@ -1,11 +1,14 @@
+import 'package:botanica/widgets/module.dart';
 import 'package:flutter/material.dart';
 
-class Productcart extends StatelessWidget {
+class Productcart extends StatefulWidget {
   final String img;
   final String rating;
   final String title;
   final String weight;
   final String price;
+  final VoidCallback onAddToCart;
+  final VoidCallback? onFavoriteChanged;
   const Productcart({
     super.key,
     required this.img,
@@ -13,10 +16,18 @@ class Productcart extends StatelessWidget {
     required this.title,
     required this.weight,
     required this.price,
+    required this.onAddToCart,
+    this.onFavoriteChanged,
   });
 
   @override
+  State<Productcart> createState() => _ProductcartState();
+}
+
+class _ProductcartState extends State<Productcart> {
+  @override
   Widget build(BuildContext context) {
+    bool isFavorite = favorite.any((item) => item.title == widget.title);
     return Container(
       width: 180,
       height: 290,
@@ -41,7 +52,7 @@ class Productcart extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
-                      image: AssetImage(img),
+                      image: AssetImage(widget.img),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -49,10 +60,40 @@ class Productcart extends StatelessWidget {
                 Positioned(
                   top: 5,
                   right: 5,
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Color(0xffdedfdf),
-                    child: Icon(Icons.favorite, color: Colors.red),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (isFavorite) {
+                          favorite.removeWhere(
+                            (item) => item.title == widget.title,
+                          );
+                        } else {
+                          double parsedPrice =
+                              double.tryParse(
+                                widget.price.replaceAll(RegExp(r'[^\d.]'), ''),
+                              ) ??
+                              0.0;
+                          favorite.add(
+                            Module(
+                              title: widget.title,
+                              img: widget.img,
+                              price: parsedPrice,
+                              count: 1,
+                              isFavorite: true,
+                            ),
+                          );
+                        }
+                      });
+                      widget.onFavoriteChanged?.call();
+                    },
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: const Color(0xffdedfdf),
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -61,35 +102,38 @@ class Productcart extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(Icons.star, color: Color(0xff735c00)),
-                Text(rating, style: TextStyle(fontSize: 12)),
+                const Icon(Icons.star, color: Color(0xff735c00)),
+                Text(widget.rating, style: const TextStyle(fontSize: 12)),
               ],
             ),
             Text(
-              title,
+              widget.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             Text(
-              weight,
+              widget.weight,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade400),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  price,
-                  style: TextStyle(
+                  widget.price,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xff006E2F),
                   ),
                 ),
-                CircleAvatar(
-                  backgroundColor: Color(0xff006E2F),
-                  radius: 20,
-                  child: Icon(Icons.add, color: Colors.white),
+                GestureDetector(
+                  onTap: widget.onAddToCart,
+                  child: const CircleAvatar(
+                    backgroundColor: Color(0xff006E2F),
+                    radius: 20,
+                    child: Icon(Icons.add, color: Colors.white),
+                  ),
                 ),
               ],
             ),

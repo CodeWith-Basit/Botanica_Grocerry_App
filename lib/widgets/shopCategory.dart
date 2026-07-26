@@ -4,49 +4,49 @@ class Shopcategory extends StatelessWidget {
   const Shopcategory({super.key});
   final List<Map<String, dynamic>> category = const [
     {
-      "img": "assets/images/fruits.jpg",
+      "img": "assets/images/fruits.png",
       "title": "Fruits",
       "bck_color": Color(0xfffff4f4),
       "text_color": Color(0xff9e5757),
     },
     {
-      "img": "assets/images/vegetable.jpg",
+      "img": "assets/images/vegetables.png",
       "title": "Vegetables",
       "bck_color": Color(0xfff0faf0),
       "text_color": Color(0xff006E2F),
     },
     {
-      "img": "assets/images/dairy.jpg",
+      "img": "assets/images/dairy.png",
       "title": "Dairy",
       "bck_color": Color(0xfff4f9ff),
       "text_color": Color(0xff526a8e),
     },
     {
-      "img": "assets/images/bakery.jpg",
+      "img": "assets/images/bakery.png",
       "title": "Bakery",
       "bck_color": Color(0xfffffbf4),
       "text_color": Color(0xff9e5757),
     },
     {
-      "img": "assets/images/snaks.jpg",
-      "title": "Snaks",
+      "img": "assets/images/snacks.png",
+      "title": "Snacks",
       "bck_color": Color(0xfffff2b2),
       "text_color": Color(0xffc36f09),
     },
     {
-      "img": "assets/images/beverages.jpg",
+      "img": "assets/images/beverages.png",
       "title": "Beverages",
       "bck_color": Color(0xfff4fffe),
       "text_color": Color(0xff3b827a),
     },
     {
-      "img": "assets/images/meat.jpg",
+      "img": "assets/images/meat.png",
       "title": "Meat",
       "bck_color": Color(0xfff9bfbf),
       "text_color": Color(0xffff0000),
     },
     {
-      "img": "assets/images/frozen.jpg",
+      "img": "assets/images/frozen.png",
       "title": "Frozen",
       "bck_color": Color(0xffcaf0f8),
       "text_color": Color(0xff0077b6),
@@ -80,7 +80,7 @@ class Shopcategory extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: Image(
                     image: AssetImage(item["img"]),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),

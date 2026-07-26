@@ -5,25 +5,34 @@ class Savedproduct extends StatelessWidget {
   final String title;
   final String weight;
   final String price;
+  final String tag;
+  final VoidCallback? onDelete;
+  final VoidCallback? onAddToCart;
+
   const Savedproduct({
     super.key,
     required this.img,
     required this.title,
-    required this.weight,
+    this.weight = '/ pc',
     required this.price,
+    this.tag = 'Organic',
+    this.onDelete,
+    this.onAddToCart,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 180,
-      height: 290,
-      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.shade200, width: 1),
         boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Padding(
@@ -33,64 +42,100 @@ class Savedproduct extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Container(
-                  height: 140,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      image: AssetImage(img),
-                      fit: BoxFit.cover,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    img,
+                    height: 125,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
                 Positioned(
-                  top: 5,
-                  right: 5,
-                  child: CircleAvatar(
-                    radius: 15,
-                    backgroundColor: Color(0xffdedfdf),
-                    child: Icon(Icons.delete_rounded, color: Colors.red),
+                  top: 6,
+                  right: 6,
+                  child: GestureDetector(
+                    onTap: onDelete,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 18,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                tag,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF006E2F),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
             Text(
               title,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Text(
-                  price,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff006E2F),
-                  ),
-                ),
-                SizedBox(width: 5),
-                Text(
-                  weight,
-                  style: TextStyle(fontSize: 16, color: Colors.grey.shade400),
-                ),
-              ],
+            const SizedBox(height: 2),
+            Text(
+              "$price $weight",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade600,
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff006E2F),
+                  backgroundColor: const Color(0xFF006E2F),
                   foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
-
-                onPressed: () {},
-                child: Text("Add to Cart", style: TextStyle(fontSize: 16)),
+                onPressed: onAddToCart,
+                child: const Text(
+                  "Add to Cart",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],

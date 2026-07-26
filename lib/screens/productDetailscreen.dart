@@ -1,3 +1,4 @@
+import 'package:botanica/widgets/module.dart';
 import 'package:flutter/material.dart';
 
 class Productdetailscreen extends StatefulWidget {
@@ -25,16 +26,65 @@ class Productdetailscreen extends StatefulWidget {
 int quantity = 1;
 
 class _ProductdetailscreenState extends State<Productdetailscreen> {
+  void _addToCart(String title, String img, double price) {
+    final alreadyExists = cart.any((item) => item.title == title);
+    if (alreadyExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title is already in your cart.'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      setState(() {
+        cart.add(Module(title: title, img: img, price: price, count: 1));
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title added to cart successfully!'),
+          backgroundColor: const Color(0xFF53B175),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isFavorite = favorite.any((item) => item.title == widget.title);
     return Scaffold(
       appBar: AppBar(
         actions: [
-          Icon(Icons.share),
-          SizedBox(width: 25),
-          Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.favorite),
+          const Icon(Icons.share),
+          const SizedBox(width: 25),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (isFavorite) {
+                  favorite.removeWhere((item) => item.title == widget.title);
+                } else {
+                  double parsedPrice = double.tryParse(
+                          widget.price.replaceAll(RegExp(r'[^\d.]'), '')) ??
+                      0.0;
+                  favorite.add(
+                    Module(
+                      title: widget.title,
+                      img: widget.img,
+                      price: parsedPrice,
+                      count: 1,
+                      isFavorite: true,
+                    ),
+                  );
+                }
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.grey,
+              ),
+            ),
           ),
         ],
       ),
@@ -544,7 +594,13 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                             backgroundColor: Color(0xff006E2F),
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _addToCart( 
+                              widget.title,
+                              widget.img,
+                              double.parse(widget.price.replaceAll('\$', '')),
+                            );
+                          },
                           icon: Icon(Icons.shopping_basket_outlined),
                           label: Text(
                             "Add to Cart",

@@ -1,5 +1,4 @@
 import 'package:botanica/screens/SignupScreen.dart';
-import 'package:botanica/screens/profileScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:botanica/widgets/shopCategory.dart';
@@ -89,11 +88,11 @@ class Shopscreen extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const Signupscreen(),
-                    ),
-                  );
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => const Signupscreen(),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -118,7 +117,7 @@ class Shopscreen extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) => const Signinscreen(),
+                      builder: (context) =>  Signinscreen(),
                     ),
                   );
                 },

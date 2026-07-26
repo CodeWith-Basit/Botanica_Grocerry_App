@@ -1,5 +1,4 @@
-import 'package:botanica/screens/homeScreen.dart';
-import 'package:botanica/widgets/bottomNavigation.dart';
+import 'package:botanica/screens/SignupScreen.dart';
 import 'package:flutter/material.dart';
 
 class Onboardingscreen extends StatefulWidget {
@@ -130,9 +129,7 @@ class _OnboardingScreenState extends State<Onboardingscreen> {
                     } else {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const Bottomnavigation(),
-                        ),
+                        MaterialPageRoute(builder: (context) => Signupscreen()),
                       );
                     }
                   });

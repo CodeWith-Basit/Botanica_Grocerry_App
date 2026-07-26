@@ -1,4 +1,5 @@
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Signupscreen extends StatefulWidget {
@@ -10,6 +11,71 @@ class Signupscreen extends StatefulWidget {
 
 class _SignupscreenState extends State<Signupscreen> {
   bool isChecked = false;
+  bool _obscureText = true;
+  bool _obscureText2 = false;
+
+  TextEditingController nameController = TextEditingController();
+
+  TextEditingController emailController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
+
+  TextEditingController confirmPasswordController = TextEditingController();
+
+  Signup(context) async {
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
+
+    try {
+      if (name.isEmpty ||
+          email.isEmpty ||
+          password.isEmpty ||
+          confirmPassword.isEmpty) {
+        print('Please fill in all fields');
+        return;
+      }
+
+      if (password != confirmPassword) {
+        print('Passwords do not match');
+        return;
+      }
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text,
+            password: passwordController.text,
+          );
+      if (credential.user != null) {
+        print('User signed up successfully');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => Signinscreen()),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Signed up successfully',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            backgroundColor: Color(0xFF388E3C),
+          ),
+        );
+      } else {
+        print('Failed to sign up user');
+      }
+    } catch (e) {
+      print('Error signing up: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Invalid email or password $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +121,11 @@ class _SignupscreenState extends State<Signupscreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextField(
+                  child: TextFormField(
+                    controller: nameController,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Name is required'
+                        : null,
                     decoration: InputDecoration(
                       hintText: "Enter Full Name",
                       prefixIcon: Icon(Icons.person),
@@ -75,7 +145,11 @@ class _SignupscreenState extends State<Signupscreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextField(
+                  child: TextFormField(
+                    controller: emailController,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Email is required'
+                        : null,
                     decoration: InputDecoration(
                       hintText: "abc123@gmail.com",
                       prefixIcon: Icon(Icons.email),
@@ -95,14 +169,29 @@ class _SignupscreenState extends State<Signupscreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextField(
+                  child: TextFormField(
+                    controller: passwordController,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Password is required'
+                        : null,
+                    obscureText: _obscureText,
                     decoration: InputDecoration(
                       hintText: "Enter Password",
-                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_sharp
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      suffixIcon: Icon(Icons.remove_red_eye_outlined),
                     ),
                   ),
                 ),
@@ -119,10 +208,27 @@ class _SignupscreenState extends State<Signupscreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextField(
+                  child: TextFormField(
+                    controller: confirmPasswordController,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Confirm Password is required'
+                        : null,
+                    obscureText: _obscureText2,
                     decoration: InputDecoration(
                       hintText: "Confirm Password",
                       prefixIcon: Icon(Icons.lock_clock_outlined),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText2
+                              ? Icons.visibility_sharp
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText2 = !_obscureText2;
+                          });
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -157,7 +263,9 @@ class _SignupscreenState extends State<Signupscreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      await Signup(context);
+                    },
                     child: const Text(
                       "Create Account",
                       style: TextStyle(
@@ -233,7 +341,7 @@ class _SignupscreenState extends State<Signupscreen> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
-                            builder: (context) => const Signinscreen(),
+                            builder: (context) => Signinscreen(),
                           ),
                         );
                       },

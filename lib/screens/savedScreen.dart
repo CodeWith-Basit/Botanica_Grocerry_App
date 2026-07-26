@@ -1,16 +1,66 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
+import 'package:botanica/widgets/module.dart';
 import 'package:botanica/widgets/savedProduct.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Savedscreen extends StatelessWidget {
+class Savedscreen extends StatefulWidget {
   const Savedscreen({super.key});
+
+  @override
+  State<Savedscreen> createState() => _SavedscreenState();
+}
+
+class _SavedscreenState extends State<Savedscreen> {
+  void _addToCart(Module item) {
+    final alreadyExists = cart.any((cartItem) => cartItem.title == item.title);
+    if (alreadyExists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${item.title} is already in your cart.'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      setState(() {
+        cart.add(
+          Module(
+            title: item.title,
+            img: item.img,
+            price: item.price,
+            count: 1,
+            isFavorite: true,
+          ),
+        );
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${item.title} added to cart successfully!'),
+          backgroundColor: const Color(0xFF53B175),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _removeFromFavorites(int index, Module item) {
+    setState(() {
+      favorite.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${item.title} removed from favorites.'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
       drawer: Drawer(
         backgroundColor: Colors.white,
         child: Column(
@@ -117,12 +167,12 @@ class Savedscreen extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) => const Signinscreen(),
+                      builder: (context) =>  Signinscreen(),
                     ),
                   );
                 },
-                icon: Icon(Icons.login),
-                label: Text("Logout"),
+                icon: const Icon(Icons.login),
+                label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff006E2F),
                   foregroundColor: Colors.white,
@@ -134,103 +184,89 @@ class Savedscreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
       appBar: AppBar(
         titleSpacing: 0,
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Text(
           "Botanica",
           style: GoogleFonts.inter(
             fontSize: 30,
             fontWeight: FontWeight.w900,
-            color: Color(0xff006E2F),
+            color: const Color(0xff006E2F),
           ),
         ),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: 15),
+            padding: EdgeInsets.only(right: 15),
             child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
           ),
         ],
       ),
 
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
+      body: favorite.isEmpty
+          ? const Center(
               child: Text(
-                "Your Saved Items",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                'No favorite items yet',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Your Saved Items",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Items you've liked for later",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: favorite.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.58,
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = favorite[index];
+                      return Savedproduct(
+                        img: item.img,
+                        title: item.title,
+                        price: "\$${item.price.toStringAsFixed(2)}",
+                        weight: '/ pc',
+                        tag: index % 2 == 0 ? 'Organic' : 'Seasonal',
+                        onDelete: () => _removeFromFavorites(index, item),
+                        onAddToCart: () => _addToCart(item),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Text(
-                "Items you've liked for later",
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-            SizedBox(height: 15),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Savedproduct(
-                      img: "assets/images/stawberry.jpg",
-                      title: "Strawberries",
-                      weight: " / 400g",
-                      price: "\$4.99",
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Savedproduct(
-                      img: "assets/images/avacado.jpg",
-                      title: "Avacado",
-                      weight: " / pc",
-                      price: "\$2.99",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Savedproduct(
-                      img: "assets/images/milk.jpg",
-                      title: "Milk",
-                      weight: " / 1 Liter",
-                      price: "\$7.99",
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Savedproduct(
-                      img: "assets/images/grapes.jpg",
-                      title: "Grapes",
-                      weight: " / 150g",
-                      price: "\$2.99",
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
