@@ -1,4 +1,5 @@
 import 'package:botanica/screens/checkoutScreen.dart';
+import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/module.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,22 +14,32 @@ class Cartscreen extends StatefulWidget {
 class _CartscreenState extends State<Cartscreen> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back, color: Color(0xff006E2F)),
+        backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
+        elevation: 0,
+        leading: Icon(
+          Icons.arrow_back,
+          color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+        ),
         titleSpacing: 0,
         title: Text(
           "Botanica",
           style: GoogleFonts.inter(
             fontSize: 30,
             fontWeight: FontWeight.w900,
-            color: Color(0xff006E2F),
+            color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
+            child: Icon(
+              Icons.notifications_none,
+              color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+            ),
           ),
         ],
       ),
@@ -39,7 +50,7 @@ class _CartscreenState extends State<Cartscreen> {
                 style: GoogleFonts.inter(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: isDark ? AppThemes.darkTextSecondary : Colors.black,
                 ),
               ),
             )
@@ -55,11 +66,11 @@ class _CartscreenState extends State<Cartscreen> {
                       style: GoogleFonts.inter(
                         fontSize: 35,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -73,14 +84,10 @@ class _CartscreenState extends State<Cartscreen> {
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF191E1A)
-                                : Colors.white,
+                            color: isDark ? AppThemes.darkCardSurface : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? const Color(0xFF273029)
-                                  : const Color(0xff006E2F),
+                              color: isDark ? AppThemes.darkCardBorder : const Color(0xff006E2F),
                             ),
                           ),
                           child: Row(
@@ -114,9 +121,7 @@ class _CartscreenState extends State<Cartscreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black87,
+                                          color: isDark ? Colors.white : Colors.black87,
                                         ),
                                       ),
                                     ),
@@ -125,9 +130,7 @@ class _CartscreenState extends State<Cartscreen> {
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? const Color(0xFF22C55E)
-                                            : const Color(0xff006E2F),
+                                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                                       ),
                                     ),
                                     Row(
@@ -135,9 +138,7 @@ class _CartscreenState extends State<Cartscreen> {
                                       children: [
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: Theme.of(context).brightness == Brightness.dark
-                                                ? const Color(0xFF273029)
-                                                : const Color(0xffF1F2F4),
+                                            color: isDark ? AppThemes.darkInputBg : const Color(0xffF1F2F4),
                                             borderRadius: BorderRadius.circular(
                                               30,
                                             ),
@@ -147,7 +148,10 @@ class _CartscreenState extends State<Cartscreen> {
                                                 MainAxisAlignment.end,
                                             children: [
                                               IconButton(
-                                                icon: const Icon(Icons.remove),
+                                                icon: Icon(
+                                                  Icons.remove,
+                                                  color: isDark ? Colors.white70 : Colors.black,
+                                                ),
                                                 onPressed: () {
                                                   setState(() {
                                                     if (cart[index].count > 1) {
@@ -162,11 +166,15 @@ class _CartscreenState extends State<Cartscreen> {
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
+                                                  color: isDark ? Colors.white : Colors.black,
                                                 ),
                                               ),
 
                                               IconButton(
-                                                icon: const Icon(Icons.add),
+                                                icon: Icon(
+                                                  Icons.add,
+                                                  color: isDark ? AppThemes.primaryGreen : Colors.black,
+                                                ),
                                                 onPressed: () {
                                                   setState(() {
                                                     cart[index].count += 1;
@@ -178,7 +186,7 @@ class _CartscreenState extends State<Cartscreen> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 5),
+                                    const SizedBox(height: 5),
                                   ],
                                 ),
                               ),
@@ -188,7 +196,7 @@ class _CartscreenState extends State<Cartscreen> {
                                 child: IconButton(
                                   icon: const Icon(
                                     Icons.delete,
-                                    color: Colors.red,
+                                    color: AppThemes.tertiaryCoral,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -209,9 +217,14 @@ class _CartscreenState extends State<Cartscreen> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(15),
         height: 90,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+        decoration: BoxDecoration(
+          color: isDark ? AppThemes.darkCardSurface : Colors.white,
+          border: Border(
+            top: BorderSide(
+              color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+            ),
+          ),
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,12 +233,19 @@ class _CartscreenState extends State<Cartscreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Total", style: TextStyle(fontSize: 16)),
+                Text(
+                  "Total",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark ? AppThemes.darkTextSecondary : Colors.black87,
+                  ),
+                ),
                 Text(
                   "\$${getTotalprice().toStringAsFixed(2)}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? AppThemes.primaryGreen : Colors.black,
                   ),
                 ),
               ],
@@ -234,12 +254,15 @@ class _CartscreenState extends State<Cartscreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Color(0xff006E2F),
-                padding: EdgeInsets.only(
+                backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                padding: const EdgeInsets.only(
                   left: 35,
                   right: 35,
                   top: 15,
                   bottom: 15,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               onPressed: () {
@@ -257,7 +280,7 @@ class _CartscreenState extends State<Cartscreen> {
                   MaterialPageRoute(builder: (_) => const CheckoutScreen()),
                 ).then((_) => setState(() {}));
               },
-              child: const Text("Checkout", style: TextStyle(fontSize: 17)),
+              child: const Text("Checkout", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
             ),
           ],
         ),

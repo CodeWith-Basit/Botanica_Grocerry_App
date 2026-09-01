@@ -301,7 +301,8 @@ class _HomescreenState extends State<Homescreen> {
                             ? const Color(0xFF22C55E)
                             : const Color(0xff006e2f),
                       ),
-                      containerColor: Theme.of(context).brightness == Brightness.dark
+                      containerColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFF142419)
                           : const Color(0xffe1f4eb),
                       title: "Veggies",
@@ -314,7 +315,8 @@ class _HomescreenState extends State<Homescreen> {
                             ? const Color(0xFFFF8A65)
                             : const Color(0xff735c00),
                       ),
-                      containerColor: Theme.of(context).brightness == Brightness.dark
+                      containerColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFF251A18)
                           : const Color(0xfff3f1e1),
                       title: "Fruits",
@@ -327,7 +329,8 @@ class _HomescreenState extends State<Homescreen> {
                             ? const Color(0xFF4ADE80)
                             : const Color(0xff006e2f),
                       ),
-                      containerColor: Theme.of(context).brightness == Brightness.dark
+                      containerColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFF142419)
                           : const Color(0xffe1f4eb),
                       title: "Dairy",
@@ -340,7 +343,8 @@ class _HomescreenState extends State<Homescreen> {
                             ? const Color(0xFFD1D5DB)
                             : const Color(0xff6d7b6c),
                       ),
-                      containerColor: Theme.of(context).brightness == Brightness.dark
+                      containerColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFF1E241F)
                           : const Color(0xfff1f5f4),
                       title: "Bakery",
@@ -353,7 +357,8 @@ class _HomescreenState extends State<Homescreen> {
                             ? const Color(0xFF22C55E)
                             : const Color(0xff006e2f),
                       ),
-                      containerColor: Theme.of(context).brightness == Brightness.dark
+                      containerColor:
+                          Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFF142419)
                           : const Color(0xffe1f4eb),
                       title: "Drinks",

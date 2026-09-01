@@ -1,5 +1,6 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:botanica/widgets/module.dart';
 import 'package:botanica/widgets/savedProduct.dart';
@@ -67,10 +68,11 @@ class _SavedscreenState extends State<Savedscreen> {
             ? user.email!.split('@')[0]
             : "User");
     final email = user?.email ?? "No email provided";
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: isDark ? AppThemes.darkNeutralBg : const Color(0xFFF9FAFB),
       drawer: Drawer(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181A) : Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
@@ -96,13 +98,16 @@ class _SavedscreenState extends State<Savedscreen> {
 
             const SizedBox(height: 10),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.home_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Home",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -116,13 +121,16 @@ class _SavedscreenState extends State<Savedscreen> {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.person_outline,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "My Profile",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -136,13 +144,16 @@ class _SavedscreenState extends State<Savedscreen> {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.login_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "SignUp",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -154,13 +165,13 @@ class _SavedscreenState extends State<Savedscreen> {
               },
             ),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.settings_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Settings",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -182,7 +193,7 @@ class _SavedscreenState extends State<Savedscreen> {
                 icon: const Icon(Icons.login),
                 label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff006E2F),
+                  backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
@@ -198,20 +209,23 @@ class _SavedscreenState extends State<Savedscreen> {
       ),
       appBar: AppBar(
         titleSpacing: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
         elevation: 0,
         title: Text(
           "Botanica",
           style: GoogleFonts.inter(
             fontSize: 30,
             fontWeight: FontWeight.w900,
-            color: const Color(0xff006E2F),
+            color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
           ),
         ),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
+            padding: const EdgeInsets.only(right: 15),
+            child: Icon(
+              Icons.notifications_none,
+              color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+            ),
           ),
         ],
       ),
@@ -232,12 +246,12 @@ class _SavedscreenState extends State<Savedscreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Your Saved Items",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -245,7 +259,7 @@ class _SavedscreenState extends State<Savedscreen> {
                     "Items you've liked for later",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                     ),
                   ),
                   const SizedBox(height: 16),

@@ -1,5 +1,6 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:botanica/widgets/shopCategory.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,9 +19,12 @@ class Shopscreen extends StatelessWidget {
             ? user.email!.split('@')[0]
             : "User");
     final email = user?.email ?? "No email provided";
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
       drawer: Drawer(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181A) : Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
@@ -46,13 +50,16 @@ class Shopscreen extends StatelessWidget {
 
             const SizedBox(height: 10),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.home_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Home",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -66,13 +73,16 @@ class Shopscreen extends StatelessWidget {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.person_outline,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "My Profile",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -86,13 +96,16 @@ class Shopscreen extends StatelessWidget {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.login_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "SignUP",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -104,13 +117,13 @@ class Shopscreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.settings_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Settings",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -129,10 +142,10 @@ class Shopscreen extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.login),
-                label: Text("Logout"),
+                icon: const Icon(Icons.login),
+                label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff006E2F),
+                  backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
@@ -142,24 +155,29 @@ class Shopscreen extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
       appBar: AppBar(
         titleSpacing: 0,
+        backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
+        elevation: 0,
         title: Text(
           "Botanica",
           style: GoogleFonts.inter(
             fontSize: 30,
             fontWeight: FontWeight.w900,
-            color: Color(0xff006E2F),
+            color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
+            child: Icon(
+              Icons.notifications_none,
+              color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+            ),
           ),
         ],
       ),
@@ -171,20 +189,42 @@ class Shopscreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
               child: TextField(
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: isDark ? AppThemes.darkInputBg : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
-                    borderSide: BorderSide(width: 1, color: Colors.grey),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: isDark ? AppThemes.darkCardBorder : Colors.grey,
+                    ),
                   ),
-                  prefixIcon: Icon(Icons.search),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: isDark ? AppThemes.darkCardBorder : Colors.grey.shade300,
+                    ),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
                   labelText: "Search Categories....",
-                  suffixIcon: Icon(Icons.mic, color: Colors.grey),
+                  labelStyle: TextStyle(
+                    color: isDark ? AppThemes.darkTextSecondary : Colors.grey,
+                  ),
+                  suffixIcon: Icon(
+                    Icons.mic,
+                    color: isDark ? AppThemes.primaryGreen : Colors.grey,
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -192,21 +232,28 @@ class Shopscreen extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 15),
                   child: Text(
                     "Browse Categories",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 15),
                   child: Text(
                     "Refine",
-                    style: TextStyle(color: Color(0xff006E2F), fontSize: 18),
+                    style: TextStyle(
+                      color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+            const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
               child: Shopcategory(),
             ),
           ],

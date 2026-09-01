@@ -26,9 +26,11 @@ class _ProfilescreenState extends State<Profilescreen> {
             ? user.email!.split('@')[0]
             : "User");
     final email = user?.email ?? "No email provided";
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
       drawer: Drawer(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF18181A) : Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
@@ -54,13 +56,16 @@ class _ProfilescreenState extends State<Profilescreen> {
 
             const SizedBox(height: 10),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.home_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Home",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -74,13 +79,16 @@ class _ProfilescreenState extends State<Profilescreen> {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.person_outline,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "My Profile",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -88,13 +96,16 @@ class _ProfilescreenState extends State<Profilescreen> {
             ),
 
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.login_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "SignUp",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -106,13 +117,13 @@ class _ProfilescreenState extends State<Profilescreen> {
               },
             ),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.settings_outlined,
-                color: Color(0xff006E2F),
+                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
               ),
-              title: const Text(
+              title: Text(
                 "Settings",
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -131,10 +142,10 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ),
                   );
                 },
-                icon: Icon(Icons.login),
-                label: Text("Logout"),
+                icon: const Icon(Icons.login),
+                label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff006E2F),
+                  backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
@@ -144,24 +155,29 @@ class _ProfilescreenState extends State<Profilescreen> {
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
           ],
         ),
       ),
       appBar: AppBar(
         titleSpacing: 0,
+        backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
+        elevation: 0,
         title: Text(
           "Botanica",
           style: GoogleFonts.inter(
             fontSize: 30,
             fontWeight: FontWeight.w900,
-            color: Color(0xff006E2F),
+            color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
           ),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
-            child: Icon(Icons.notifications_none, color: Color(0xff006E2F)),
+            child: Icon(
+              Icons.notifications_none,
+              color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+            ),
           ),
         ],
       ),
@@ -177,11 +193,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                 width: double.infinity,
                 height: 150,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -196,8 +215,8 @@ class _ProfilescreenState extends State<Profilescreen> {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundColor: Color(0xff006E2F),
-                            child: CircleAvatar(
+                            backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                            child: const CircleAvatar(
                               radius: 45,
                               backgroundImage: AssetImage(
                                 "assets/images/person.jpg",
@@ -207,31 +226,35 @@ class _ProfilescreenState extends State<Profilescreen> {
                         ],
                       ),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           displayName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         Text(
                           email,
-                          style: const TextStyle(fontSize: 18),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isDark ? AppThemes.darkTextSecondary : Colors.black87,
+                          ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xff6cf8bb),
-                            foregroundColor: Color(0xff006E2F),
+                            backgroundColor: isDark ? const Color(0xFF1B2A20) : const Color(0xff6cf8bb),
+                            foregroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                           ),
                           onPressed: () {},
-                          icon: Icon(Icons.verified),
-                          label: Text(
+                          icon: const Icon(Icons.verified),
+                          label: const Text(
                             "Premium Member",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -242,23 +265,33 @@ class _ProfilescreenState extends State<Profilescreen> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.only(left: 15),
-              child: Text("ACCOUNT ACTIVITIES", style: TextStyle(fontSize: 18)),
+              child: Text(
+                "ACCOUNT ACTIVITIES",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade700,
+                ),
+              ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
                 width: double.infinity,
                 height: 250,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -267,56 +300,73 @@ class _ProfilescreenState extends State<Profilescreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.history, color: Color(0xff006E2F)),
+                      leading: Icon(Icons.history, color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F)),
                       title: Text(
                         "Order History",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
-                      subtitle: Text("24 past deliveries"),
-                      trailing: Icon(
+                      subtitle: Text(
+                        "24 past deliveries",
+                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                      ),
+                      trailing: const Icon(
                         Icons.arrow_forward_ios,
                         color: Colors.grey,
                       ),
                     ),
                     Divider(
-                      color: Colors.grey,
-                      thickness: 2,
+                      color: isDark ? AppThemes.darkCardBorder : Colors.grey,
+                      thickness: 1,
                       indent: 20,
                       endIndent: 20,
                     ),
                     ListTile(
                       leading: Icon(
                         Icons.location_on_outlined,
-                        color: Color(0xff006E2F),
+                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                       ),
                       title: Text(
                         "Delivery Addresses",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
-                      subtitle: Text("Home, Office, Gym"),
-
-                      trailing: Icon(
+                      subtitle: Text(
+                        "Home, Office, Gym",
+                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                      ),
+                      trailing: const Icon(
                         Icons.arrow_forward_ios,
                         color: Colors.grey,
                       ),
                     ),
                     Divider(
-                      color: Colors.grey,
-                      thickness: 2,
+                      color: isDark ? AppThemes.darkCardBorder : Colors.grey,
+                      thickness: 1,
                       indent: 20,
                       endIndent: 20,
                     ),
                     ListTile(
                       leading: Icon(
                         Icons.payments_outlined,
-                        color: Color(0xff006E2F),
+                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                       ),
                       title: Text(
                         "Payment Methods",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
-                      subtitle: Text("Visa ending in •••• 4492"),
-                      trailing: Icon(
+                      subtitle: Text(
+                        "Visa ending in •••• 4492",
+                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                      ),
+                      trailing: const Icon(
                         Icons.arrow_forward_ios,
                         color: Colors.grey,
                       ),
@@ -325,23 +375,33 @@ class _ProfilescreenState extends State<Profilescreen> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.only(left: 15),
-              child: Text("PREFENCES", style: TextStyle(fontSize: 18)),
+              child: Text(
+                "PREFERENCES",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade700,
+                ),
+              ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
                 width: double.infinity,
                 height: 160,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -352,19 +412,25 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ListTile(
                       leading: Icon(
                         Icons.notifications_active,
-                        color: Color(0xff735c00),
+                        color: isDark ? AppThemes.secondaryGreen : const Color(0xff735c00),
                       ),
                       title: Text(
                         "Push Notifications",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
                       ),
-                      subtitle: Text("Orders, deals, and restocks"),
+                      subtitle: Text(
+                        "Orders, deals, and restocks",
+                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                      ),
                       trailing: Switch(
                         value: isSwitch,
                         activeThumbColor: const Color(0xFFFFFFFF),
-                        activeTrackColor: const Color(0xff006E2F),
+                        activeTrackColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
                         inactiveThumbColor: Colors.grey,
-                        inactiveTrackColor: Colors.grey[300],
+                        inactiveTrackColor: isDark ? AppThemes.darkCardBorder : Colors.grey[300],
                         onChanged: (value) {
                           setState(() {
                             isSwitch = value;
@@ -373,8 +439,8 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                     ),
                     Divider(
-                      color: Colors.grey,
-                      thickness: 2,
+                      color: isDark ? AppThemes.darkCardBorder : Colors.grey,
+                      thickness: 1,
                       indent: 20,
                       endIndent: 20,
                     ),
@@ -382,26 +448,26 @@ class _ProfilescreenState extends State<Profilescreen> {
                       leading: Icon(
                         Icons.dark_mode,
                         color: ThemeController.isDarkMode
-                            ? const Color(0xFF22C55E)
+                            ? AppThemes.primaryGreen
                             : const Color.fromARGB(255, 75, 74, 74),
                       ),
                       title: Text(
                         "Dark Appearance",
                         style: TextStyle(
                           fontSize: 18,
-                          color: ThemeController.isDarkMode
-                              ? Colors.white
-                              : Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
-                      subtitle: const Text("Switch theme mode"),
-
+                      subtitle: Text(
+                        "Switch theme mode",
+                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                      ),
                       trailing: Switch(
                         value: ThemeController.isDarkMode,
                         activeThumbColor: const Color(0xFFFFFFFF),
-                        activeTrackColor: const Color(0xff006E2F),
+                        activeTrackColor: AppThemes.primaryGreen,
                         inactiveThumbColor: Colors.grey,
-                        inactiveTrackColor: Colors.grey[300],
+                        inactiveTrackColor: isDark ? AppThemes.darkCardBorder : Colors.grey[300],
                         onChanged: (value) {
                           setState(() {
                             ThemeController.toggleTheme(value);
@@ -413,21 +479,21 @@ class _ProfilescreenState extends State<Profilescreen> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Color(0xff93000a),
-                  backgroundColor: Color(0xffffdad6),
+                  foregroundColor: isDark ? const Color(0xFFFF8B7C) : const Color(0xff93000a),
+                  backgroundColor: isDark ? const Color(0xFF281616) : const Color(0xffffdad6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 onPressed: () {},
-                icon: Icon(Icons.login),
-                label: Text(
+                icon: const Icon(Icons.login),
+                label: const Text(
                   "Log Out of Account",
                   style: TextStyle(fontSize: 16),
                 ),

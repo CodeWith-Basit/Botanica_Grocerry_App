@@ -1,3 +1,4 @@
+import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,27 +52,30 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     super.dispose();
   }
 
-  double get _total => getTotalprice();
+  double get _total =>
+      cart.fold(0.0, (sum, item) => sum + item.price * item.count);
 
   void _placeOrder() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await _btnController.reverse();
     await _btnController.forward();
+    await _btnController.reverse();
 
     setState(() => _isPlacing = true);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
     setState(() => _isPlacing = false);
 
-    if (!mounted) return;
     _showSuccessDialog();
   }
 
   void _showSuccessDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => Dialog(
+        backgroundColor: isDark ? AppThemes.darkCardSurface : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(28),
@@ -82,7 +86,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 width: 80,
                 height: 80,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF53B175),
+                  color: AppThemes.primaryGreen,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -92,12 +96,12 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Order Placed!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF181725),
+                  color: isDark ? Colors.white : const Color(0xFF181725),
                 ),
               ),
               const SizedBox(height: 10),
@@ -106,7 +110,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: Colors.grey.shade600,
+                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade600,
                   height: 1.5,
                 ),
               ),
@@ -115,7 +119,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF53B175),
+                    backgroundColor: AppThemes.primaryGreen,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -153,23 +157,24 @@ class _CheckoutScreenState extends State<CheckoutScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: isDark ? AppThemes.darkNeutralBg : const Color(0xFFF8F9FB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF181725),
+            color: isDark ? Colors.white : const Color(0xFF181725),
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Checkout',
           style: TextStyle(
-            color: Color(0xFF181725),
+            color: isDark ? Colors.white : const Color(0xFF181725),
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -181,7 +186,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
           padding: const EdgeInsets.all(16),
           children: [
             _sectionCard(
-              title: 'Order Summary ',
+              title: 'Order Summary',
               icon: Icons.receipt_long_rounded,
               child: Column(
                 children: [
@@ -203,45 +208,52 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                           Expanded(
                             child: Text(
                               item.title,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
+                                color: isDark ? Colors.white : Colors.black87,
                               ),
                             ),
                           ),
                           Text(
                             'x${item.count}',
-                            style: TextStyle(color: Colors.grey.shade500),
+                            style: TextStyle(
+                              color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade500,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             '\$${(item.price * item.count).toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF53B175),
+                              color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const Divider(height: 20),
+                  Divider(
+                    height: 20,
+                    color: isDark ? AppThemes.darkCardBorder : Colors.grey.shade200,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Total',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       Text(
                         '\$${_total.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Color(0xFF53B175),
+                          color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
                         ),
                       ),
                     ],
@@ -252,7 +264,6 @@ class _CheckoutScreenState extends State<CheckoutScreen>
 
             const SizedBox(height: 16),
 
-            // ───── Delivery Address ─────
             _sectionCard(
               title: 'Delivery Address',
               icon: Icons.location_on_rounded,
@@ -260,28 +271,25 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 children: [
                   _buildField(
                     controller: _addressCtrl,
-                    label: 'Full Address',
-                    hint: 'e.g. House 12, Street 4, Islamabad',
+                    label: 'Street Address',
+                    hint: 'e.g. 123 Green Valley Ave',
                     icon: Icons.home_rounded,
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'Address is required'
-                        : null,
-                    maxLines: 2,
+                    validator: (v) =>
+                        v == null || v.trim().isEmpty ? 'Address is required' : null,
                   ),
                   const SizedBox(height: 12),
                   _buildField(
                     controller: _pinCtrl,
-                    label: 'Pin Code',
-                    hint: 'e.g. 440001',
+                    label: 'ZIP / Postal Code',
+                    hint: 'e.g. 94103',
                     icon: Icons.pin_drop_rounded,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(6),
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (v) {
-                      if (v == null || v.isEmpty) return 'Pin code is required';
-                      if (v.length != 6) return 'Pin code must be 6 digits';
+                      if (v == null || v.trim().isEmpty) {
+                        return 'ZIP code is required';
+                      }
+                      if (v.trim().length < 4) return 'Enter a valid ZIP code';
                       return null;
                     },
                   ),
@@ -300,13 +308,13 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                     value: 'card',
                     label: 'Credit / Debit Card',
                     icon: Icons.credit_card_rounded,
-                    color: const Color(0xFF4F6EF7),
+                    color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
                   ),
                   _paymentTile(
                     value: 'cod',
                     label: 'Cash on Delivery',
-                    icon: Icons.local_shipping_rounded,
-                    color: const Color(0xFFF18701),
+                    icon: Icons.money_rounded,
+                    color: isDark ? AppThemes.secondaryGreen : const Color(0xFFF37A20),
                   ),
                 ],
               ),
@@ -315,39 +323,29 @@ class _CheckoutScreenState extends State<CheckoutScreen>
             const SizedBox(height: 16),
 
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 250),
               child: _paymentMethod == 'card'
                   ? _sectionCard(
-                      key: const ValueKey('card'),
+                      key: const ValueKey('card_details'),
                       title: 'Card Details',
-                      icon: Icons.credit_card_rounded,
+                      icon: Icons.lock_outline_rounded,
                       child: Column(
                         children: [
                           _buildField(
                             controller: _cardNumberCtrl,
-                            label: 'Card Number ',
-                            hint: '1234 5678 9012 3456',
+                            label: 'Card Number',
+                            hint: 'XXXX XXXX XXXX XXXX',
                             icon: Icons.credit_card,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(16),
                             ],
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Card number is required';
-                              }
-                              final digits = v.replaceAll(' ', '');
-                              if (digits.length != 16) {
-                                return 'Enter a valid 16-digit card number';
-                              }
-                              return null;
-                            },
                             onChanged: (v) {
                               final formatted = _formatCardNumber(v);
-                              if (formatted != _cardNumberCtrl.text) {
-                                _cardNumberCtrl.value = _cardNumberCtrl.value
-                                    .copyWith(
+                              if (formatted != v) {
+                                _cardNumberCtrl.value =
+                                    TextEditingValue(
                                       text: formatted,
                                       selection: TextSelection.collapsed(
                                         offset: formatted.length,
@@ -355,16 +353,27 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                     );
                               }
                             },
+                            validator: (v) {
+                              if (v == null || v.isEmpty) {
+                                return 'Card number is required';
+                              }
+                              final clean = v.replaceAll(' ', '');
+                              if (clean.length < 13) {
+                                return 'Invalid card number';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 12),
                           _buildField(
                             controller: _cardHolderCtrl,
-                            label: 'Card Holder Name',
-                            hint: 'e.g. Abdul Basit',
+                            label: 'Cardholder Name',
+                            hint: 'e.g. Jane Doe',
                             icon: Icons.person_rounded,
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'Card holder name is required'
-                                : null,
+                            validator: (v) =>
+                                v == null || v.trim().isEmpty
+                                    ? 'Cardholder name is required'
+                                    : null,
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -372,10 +381,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                               Expanded(
                                 child: _buildField(
                                   controller: _expiryCtrl,
-                                  label: 'Expiry',
+                                  label: 'Expiry Date',
                                   hint: 'MM/YY',
-                                  icon: Icons.date_range_rounded,
-                                  keyboardType: TextInputType.number,
+                                  icon: Icons.calendar_today_rounded,
+                                  keyboardType: TextInputType.datetime,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                     LengthLimitingTextInputFormatter(4),
@@ -384,19 +393,16 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                     if (v == null || v.isEmpty) {
                                       return 'Required';
                                     }
-                                    if (v.replaceAll('/', '').length < 4) {
-                                      return 'Invalid';
-                                    }
+                                    if (v.length < 4) return 'MM/YY required';
                                     return null;
                                   },
                                   onChanged: (v) {
-                                    final digits = v.replaceAll('/', '');
-                                    if (digits.length == 2 &&
-                                        !v.contains('/')) {
-                                      _expiryCtrl.value = _expiryCtrl.value
-                                          .copyWith(
-                                            text: '$v/',
-                                            selection: TextSelection.collapsed(
+                                    if (v.length == 2 &&
+                                        !_expiryCtrl.text.endsWith('/')) {
+                                      _expiryCtrl.text = '$v/';
+                                      _expiryCtrl.selection =
+                                          TextSelection.fromPosition(
+                                            TextPosition(
                                               offset: v.length + 1,
                                             ),
                                           );
@@ -418,10 +424,8 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                     LengthLimitingTextInputFormatter(3),
                                   ],
                                   validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return 'Required';
-                                    }
-                                    if (v.length != 3) return 'Invalid CVV';
+                                    if (v == null || v.isEmpty) return 'Required';
+                                    if (v.length != 3) return 'Invalid';
                                     return null;
                                   },
                                 ),
@@ -443,10 +447,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 height: 56,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF53B175),
+                    backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
                     foregroundColor: Colors.white,
                     elevation: 4,
-                    shadowColor: const Color(0xFF53B175).withValues(alpha: 0.4),
+                    shadowColor: (isDark ? AppThemes.primaryGreen : const Color(0xFF53B175)).withValues(alpha: 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -479,7 +483,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -492,14 +496,18 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     required IconData icon,
     required Widget child,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       key: key,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppThemes.darkCardSurface : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -511,14 +519,18 @@ class _CheckoutScreenState extends State<CheckoutScreen>
         children: [
           Row(
             children: [
-              Icon(icon, color: const Color(0xFF53B175), size: 20),
+              Icon(
+                icon,
+                color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
-                  color: Color(0xFF181725),
+                  color: isDark ? Colors.white : const Color(0xFF181725),
                 ),
               ),
             ],
@@ -542,6 +554,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     int maxLines = 1,
     void Function(String)? onChanged,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: controller,
       validator: validator,
@@ -550,27 +563,47 @@ class _CheckoutScreenState extends State<CheckoutScreen>
       obscureText: obscureText,
       maxLines: maxLines,
       onChanged: onChanged,
+      style: TextStyle(
+        color: isDark ? Colors.white : const Color(0xFF181725),
+      ),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade600,
+        ),
         hintText: hint,
-        prefixIcon: Icon(icon, color: const Color(0xFF53B175), size: 20),
+        hintStyle: TextStyle(
+          color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+        ),
+        prefixIcon: Icon(
+          icon,
+          color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+          size: 20,
+        ),
         filled: true,
-        fillColor: const Color(0xFFF8F9FB),
+        fillColor: isDark ? AppThemes.darkInputBg : const Color(0xFFF8F9FB),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? AppThemes.darkCardBorder : Colors.grey.shade200,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? AppThemes.darkCardBorder : Colors.grey.shade200,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF53B175), width: 1.5),
+          borderSide: BorderSide(
+            color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -590,6 +623,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     required IconData icon,
     required Color color,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final selected = _paymentMethod == value;
     return GestureDetector(
       onTap: () => setState(() => _paymentMethod = value),
@@ -598,10 +632,14 @@ class _CheckoutScreenState extends State<CheckoutScreen>
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.08) : Colors.white,
+          color: selected
+              ? color.withValues(alpha: isDark ? 0.18 : 0.08)
+              : (isDark ? AppThemes.darkInputBg : Colors.white),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? color : Colors.grey.shade200,
+            color: selected
+                ? color
+                : (isDark ? AppThemes.darkCardBorder : Colors.grey.shade200),
             width: selected ? 1.8 : 1,
           ),
         ),
@@ -610,7 +648,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
+                color: color.withValues(alpha: isDark ? 0.2 : 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 20),
@@ -620,7 +658,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
               label,
               style: TextStyle(
                 fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                color: selected ? color : const Color(0xFF181725),
+                color: selected
+                    ? color
+                    : (isDark ? Colors.white : const Color(0xFF181725)),
                 fontSize: 15,
               ),
             ),
@@ -632,10 +672,14 @@ class _CheckoutScreenState extends State<CheckoutScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: selected ? color : Colors.grey.shade400,
+                  color: selected
+                      ? color
+                      : (isDark ? Colors.grey.shade600 : Colors.grey.shade400),
                   width: 2,
                 ),
-                color: selected ? color : Colors.white,
+                color: selected
+                    ? color
+                    : (isDark ? AppThemes.darkInputBg : Colors.white),
               ),
               child: selected
                   ? const Icon(Icons.check, color: Colors.white, size: 14)
