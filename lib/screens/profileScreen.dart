@@ -20,11 +20,12 @@ class _ProfilescreenState extends State<Profilescreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+    final displayName =
+        user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!
         : (user?.email != null && user!.email!.isNotEmpty
-            ? user.email!.split('@')[0]
-            : "User");
+              ? user.email!.split('@')[0]
+              : "User");
     final email = user?.email ?? "No email provided";
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
@@ -36,7 +37,10 @@ class _ProfilescreenState extends State<Profilescreen> {
             UserAccountsDrawerHeader(
               accountName: Text(
                 displayName,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
               accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
@@ -58,7 +62,9 @@ class _ProfilescreenState extends State<Profilescreen> {
             ListTile(
               leading: Icon(
                 Icons.home_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "Home",
@@ -81,7 +87,9 @@ class _ProfilescreenState extends State<Profilescreen> {
             ListTile(
               leading: Icon(
                 Icons.person_outline,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "My Profile",
@@ -98,7 +106,9 @@ class _ProfilescreenState extends State<Profilescreen> {
             ListTile(
               leading: Icon(
                 Icons.login_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "SignUp",
@@ -119,7 +129,9 @@ class _ProfilescreenState extends State<Profilescreen> {
             ListTile(
               leading: Icon(
                 Icons.settings_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "Settings",
@@ -145,7 +157,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                 icon: const Icon(Icons.login),
                 label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                  backgroundColor: isDark
+                      ? AppThemes.primaryGreen
+                      : const Color(0xff006E2F),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
@@ -196,11 +210,15 @@ class _ProfilescreenState extends State<Profilescreen> {
                   color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                    color: isDark
+                        ? AppThemes.darkCardBorder
+                        : Colors.transparent,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -215,7 +233,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                            backgroundColor: isDark
+                                ? AppThemes.primaryGreen
+                                : const Color(0xff006E2F),
                             child: const CircleAvatar(
                               radius: 45,
                               backgroundImage: AssetImage(
@@ -243,14 +263,20 @@ class _ProfilescreenState extends State<Profilescreen> {
                           email,
                           style: TextStyle(
                             fontSize: 16,
-                            color: isDark ? AppThemes.darkTextSecondary : Colors.black87,
+                            color: isDark
+                                ? AppThemes.darkTextSecondary
+                                : Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? const Color(0xFF1B2A20) : const Color(0xff6cf8bb),
-                            foregroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                            backgroundColor: isDark
+                                ? const Color(0xFF1B2A20)
+                                : const Color(0xff6cf8bb),
+                            foregroundColor: isDark
+                                ? AppThemes.primaryGreen
+                                : const Color(0xff006E2F),
                           ),
                           onPressed: () {},
                           icon: const Icon(Icons.verified),
@@ -273,7 +299,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade700,
+                  color: isDark
+                      ? AppThemes.darkTextSecondary
+                      : Colors.grey.shade700,
                 ),
               ),
             ),
@@ -287,11 +315,15 @@ class _ProfilescreenState extends State<Profilescreen> {
                   color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                    color: isDark
+                        ? AppThemes.darkCardBorder
+                        : Colors.transparent,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -300,7 +332,12 @@ class _ProfilescreenState extends State<Profilescreen> {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.history, color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F)),
+                      leading: Icon(
+                        Icons.history,
+                        color: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xff006E2F),
+                      ),
                       title: Text(
                         "Order History",
                         style: TextStyle(
@@ -310,7 +347,11 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                       subtitle: Text(
                         "24 past deliveries",
-                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppThemes.darkTextSecondary
+                              : Colors.grey,
+                        ),
                       ),
                       trailing: const Icon(
                         Icons.arrow_forward_ios,
@@ -326,7 +367,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ListTile(
                       leading: Icon(
                         Icons.location_on_outlined,
-                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                        color: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xff006E2F),
                       ),
                       title: Text(
                         "Delivery Addresses",
@@ -337,7 +380,11 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                       subtitle: Text(
                         "Home, Office, Gym",
-                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppThemes.darkTextSecondary
+                              : Colors.grey,
+                        ),
                       ),
                       trailing: const Icon(
                         Icons.arrow_forward_ios,
@@ -353,7 +400,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ListTile(
                       leading: Icon(
                         Icons.payments_outlined,
-                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                        color: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xff006E2F),
                       ),
                       title: Text(
                         "Payment Methods",
@@ -364,7 +413,11 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                       subtitle: Text(
                         "Visa ending in •••• 4492",
-                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppThemes.darkTextSecondary
+                              : Colors.grey,
+                        ),
                       ),
                       trailing: const Icon(
                         Icons.arrow_forward_ios,
@@ -383,7 +436,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade700,
+                  color: isDark
+                      ? AppThemes.darkTextSecondary
+                      : Colors.grey.shade700,
                 ),
               ),
             ),
@@ -392,16 +447,20 @@ class _ProfilescreenState extends State<Profilescreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
                 width: double.infinity,
-                height: 160,
+                height: 170,
                 decoration: BoxDecoration(
                   color: isDark ? AppThemes.darkCardSurface : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? AppThemes.darkCardBorder : Colors.transparent,
+                    color: isDark
+                        ? AppThemes.darkCardBorder
+                        : Colors.transparent,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.3),
+                      color: isDark
+                          ? Colors.black26
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -412,7 +471,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ListTile(
                       leading: Icon(
                         Icons.notifications_active,
-                        color: isDark ? AppThemes.secondaryGreen : const Color(0xff735c00),
+                        color: isDark
+                            ? AppThemes.secondaryGreen
+                            : const Color(0xff735c00),
                       ),
                       title: Text(
                         "Push Notifications",
@@ -423,14 +484,22 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                       subtitle: Text(
                         "Orders, deals, and restocks",
-                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppThemes.darkTextSecondary
+                              : Colors.grey,
+                        ),
                       ),
                       trailing: Switch(
                         value: isSwitch,
                         activeThumbColor: const Color(0xFFFFFFFF),
-                        activeTrackColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                        activeTrackColor: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xff006E2F),
                         inactiveThumbColor: Colors.grey,
-                        inactiveTrackColor: isDark ? AppThemes.darkCardBorder : Colors.grey[300],
+                        inactiveTrackColor: isDark
+                            ? AppThemes.darkCardBorder
+                            : Colors.grey[300],
                         onChanged: (value) {
                           setState(() {
                             isSwitch = value;
@@ -460,14 +529,20 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                       subtitle: Text(
                         "Switch theme mode",
-                        style: TextStyle(color: isDark ? AppThemes.darkTextSecondary : Colors.grey),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppThemes.darkTextSecondary
+                              : Colors.grey,
+                        ),
                       ),
                       trailing: Switch(
                         value: ThemeController.isDarkMode,
                         activeThumbColor: const Color(0xFFFFFFFF),
                         activeTrackColor: AppThemes.primaryGreen,
                         inactiveThumbColor: Colors.grey,
-                        inactiveTrackColor: isDark ? AppThemes.darkCardBorder : Colors.grey[300],
+                        inactiveTrackColor: isDark
+                            ? AppThemes.darkCardBorder
+                            : Colors.grey[300],
                         onChanged: (value) {
                           setState(() {
                             ThemeController.toggleTheme(value);
@@ -484,8 +559,12 @@ class _ProfilescreenState extends State<Profilescreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: isDark ? const Color(0xFFFF8B7C) : const Color(0xff93000a),
-                  backgroundColor: isDark ? const Color(0xFF281616) : const Color(0xffffdad6),
+                  foregroundColor: isDark
+                      ? const Color(0xFFFF8B7C)
+                      : const Color(0xff93000a),
+                  backgroundColor: isDark
+                      ? const Color(0xFF281616)
+                      : const Color(0xffffdad6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

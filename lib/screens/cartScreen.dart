@@ -84,10 +84,14 @@ class _CartscreenState extends State<Cartscreen> {
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDark ? AppThemes.darkCardSurface : Colors.white,
+                            color: isDark
+                                ? AppThemes.darkCardSurface
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isDark ? AppThemes.darkCardBorder : const Color(0xff006E2F),
+                              color: isDark
+                                  ? AppThemes.darkCardBorder
+                                  : const Color(0xff006E2F),
                             ),
                           ),
                           child: Row(
@@ -121,7 +125,9 @@ class _CartscreenState extends State<Cartscreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: isDark ? Colors.white : Colors.black87,
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black87,
                                         ),
                                       ),
                                     ),
@@ -130,7 +136,9 @@ class _CartscreenState extends State<Cartscreen> {
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                                        color: isDark
+                                            ? AppThemes.primaryGreen
+                                            : const Color(0xff006E2F),
                                       ),
                                     ),
                                     Row(
@@ -138,7 +146,9 @@ class _CartscreenState extends State<Cartscreen> {
                                       children: [
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: isDark ? AppThemes.darkInputBg : const Color(0xffF1F2F4),
+                                            color: isDark
+                                                ? AppThemes.darkInputBg
+                                                : const Color(0xffF1F2F4),
                                             borderRadius: BorderRadius.circular(
                                               30,
                                             ),
@@ -150,7 +160,9 @@ class _CartscreenState extends State<Cartscreen> {
                                               IconButton(
                                                 icon: Icon(
                                                   Icons.remove,
-                                                  color: isDark ? Colors.white70 : Colors.black,
+                                                  color: isDark
+                                                      ? Colors.white70
+                                                      : Colors.black,
                                                 ),
                                                 onPressed: () {
                                                   setState(() {
@@ -166,14 +178,18 @@ class _CartscreenState extends State<Cartscreen> {
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
-                                                  color: isDark ? Colors.white : Colors.black,
+                                                  color: isDark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                                 ),
                                               ),
 
                                               IconButton(
                                                 icon: Icon(
                                                   Icons.add,
-                                                  color: isDark ? AppThemes.primaryGreen : Colors.black,
+                                                  color: isDark
+                                                      ? AppThemes.primaryGreen
+                                                      : Colors.black,
                                                 ),
                                                 onPressed: () {
                                                   setState(() {
@@ -237,7 +253,9 @@ class _CartscreenState extends State<Cartscreen> {
                   "Total",
                   style: TextStyle(
                     fontSize: 16,
-                    color: isDark ? AppThemes.darkTextSecondary : Colors.black87,
+                    color: isDark
+                        ? AppThemes.darkTextSecondary
+                        : Colors.black87,
                   ),
                 ),
                 Text(
@@ -254,7 +272,9 @@ class _CartscreenState extends State<Cartscreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                backgroundColor: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
                 padding: const EdgeInsets.only(
                   left: 35,
                   right: 35,
@@ -280,7 +300,10 @@ class _CartscreenState extends State<Cartscreen> {
                   MaterialPageRoute(builder: (_) => const CheckoutScreen()),
                 ).then((_) => setState(() {}));
               },
-              child: const Text("Checkout", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+              child: const Text(
+                "Checkout",
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
