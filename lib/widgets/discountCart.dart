@@ -20,16 +20,21 @@ class Discountcart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 220,
       height: 130,
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.only(left: 10, top: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF191E1A) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black26 : Colors.black12,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Row(
@@ -84,34 +89,40 @@ class Discountcart extends StatelessWidget {
                   title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     height: 1.2,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Text(
                       price,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: Colors.green,
+                        color: isDark
+                            ? const Color(0xFF22C55E)
+                            : Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       oldPrice,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey,
+                        color: isDark ? Colors.grey.shade600 : Colors.grey,
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),

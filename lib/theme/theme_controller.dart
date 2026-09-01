@@ -38,32 +38,40 @@ class AppThemes {
     );
   }
 
-  // Dark Theme
+  // Dark Theme matched precisely to design mockup:
+  // - Deep obsidian/black scaffold: #0F1210
+  // - Rounded dark container cards: #191E1A / #1D231E
+  // - Vibrant neon-green / emerald accents: #22C55E / #34D399
+  // - Category circle/pill dark tints: #152219, #251F1C, #182420, etc.
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF121512),
+      scaffoldBackgroundColor: const Color(0xFF0F1210),
       primaryColor: const Color(0xFF22C55E),
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFF22C55E),
-        secondary: Color(0xFF10B981),
-        surface: Color(0xFF1E241F),
-        surfaceContainerHighest: Color(0xFF273029),
-        onSurface: Color(0xFFE5E7EB),
+        secondary: Color(0xFF34D399),
+        surface: Color(0xFF191E1A),
+        surfaceContainerHighest: Color(0xFF232B25),
+        onSurface: Color(0xFFEDEDED),
         onPrimary: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF121512),
+        backgroundColor: Color(0xFF0F1210),
         elevation: 0,
         iconTheme: IconThemeData(color: Color(0xFF22C55E)),
-        titleTextStyle: TextStyle(color: Color(0xFF22C55E), fontSize: 20),
+        titleTextStyle: TextStyle(
+          color: Color(0xFF22C55E),
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
+        ),
       ),
-      cardColor: const Color(0xFF1E241F),
+      cardColor: const Color(0xFF191E1A),
       drawerTheme: const DrawerThemeData(
-        backgroundColor: Color(0xFF1E241F),
+        backgroundColor: Color(0xFF151916),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF1E241F),
+        backgroundColor: Color(0xFF0F1210),
         selectedItemColor: Color(0xFF22C55E),
         unselectedItemColor: Color(0xFF9CA3AF),
       ),

@@ -22,16 +22,20 @@ class Savedproduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF191E1A) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-        boxShadow: const [
+        border: Border.all(
+          color: isDark ? const Color(0xFF273029) : Colors.grey.shade200,
+          width: 1,
+        ),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A000000),
+            color: isDark ? Colors.black26 : const Color(0x0A000000),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -83,15 +87,15 @@ class Savedproduct extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: isDark ? const Color(0xFF142419) : const Color(0xFFE8F5E9),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 tag,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF006E2F),
+                  color: isDark ? const Color(0xFF22C55E) : const Color(0xFF006E2F),
                 ),
               ),
             ),
@@ -100,10 +104,10 @@ class Savedproduct extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: isDark ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 2),

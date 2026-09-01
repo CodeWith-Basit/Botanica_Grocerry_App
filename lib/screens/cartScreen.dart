@@ -73,8 +73,15 @@ class _CartscreenState extends State<Cartscreen> {
                         ),
                         child: Container(
                           decoration: BoxDecoration(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF191E1A)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Color(0xff006E2F)),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFF273029)
+                                  : const Color(0xff006E2F),
+                            ),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,18 +111,23 @@ class _CartscreenState extends State<Cartscreen> {
                                       padding: const EdgeInsets.only(top: 10),
                                       child: Text(
                                         item.title,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black87,
                                         ),
                                       ),
                                     ),
                                     Text(
                                       "\$${item.price.toStringAsFixed(2)}",
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xff006E2F),
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? const Color(0xFF22C55E)
+                                            : const Color(0xff006E2F),
                                       ),
                                     ),
                                     Row(
@@ -123,7 +135,9 @@ class _CartscreenState extends State<Cartscreen> {
                                       children: [
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: const Color(0xffF1F2F4),
+                                            color: Theme.of(context).brightness == Brightness.dark
+                                                ? const Color(0xFF273029)
+                                                : const Color(0xffF1F2F4),
                                             borderRadius: BorderRadius.circular(
                                               30,
                                             ),

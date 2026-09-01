@@ -33,20 +33,56 @@ class Explorescreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
               child: TextField(
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF191E1A)
+                      : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
-                    borderSide: BorderSide(width: 1, color: Colors.grey),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF273029)
+                          : Colors.grey.shade300,
+                    ),
                   ),
-                  prefixIcon: Icon(Icons.search),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF273029)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : Colors.grey,
+                  ),
                   labelText: "Search fresh groceries....",
-                  suffixIcon: Icon(Icons.close, color: Color(0xff006E2F)),
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade500
+                        : Colors.grey,
+                  ),
+                  suffixIcon: Icon(
+                    Icons.close,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xff006E2F),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Padding(
@@ -55,35 +91,45 @@ class Explorescreen extends StatelessWidget {
                   children: [
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff006E2F),
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xff006E2F),
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () {},
-                      icon: Icon(Icons.tune),
-                      label: Text("Filters", style: TextStyle(fontSize: 16)),
+                      icon: const Icon(Icons.tune),
+                      label: const Text("Filters", style: TextStyle(fontSize: 16)),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.grey,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF191E1A)
+                            : Colors.white,
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade300
+                            : Colors.grey,
                       ),
                       onPressed: () {},
-                      icon: Icon(Icons.tune),
-                      label: Text(
+                      icon: const Icon(Icons.tune),
+                      label: const Text(
                         "Price: Under \$10",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.grey,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF191E1A)
+                            : Colors.white,
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade300
+                            : Colors.grey,
                       ),
                       onPressed: () {},
-                      icon: Icon(Icons.tune),
-                      label: Text(
+                      icon: const Icon(Icons.tune),
+                      label: const Text(
                         "Rating: 4.5+",
                         style: TextStyle(fontSize: 16),
                       ),
@@ -92,26 +138,30 @@ class Explorescreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
+            const SizedBox(height: 15),
+            const Padding(
+              padding: EdgeInsets.only(left: 15),
               child: Text(
                 "Search Suggestions",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Container(
                 width: double.infinity,
                 height: 210,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF191E1A)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black26
+                          : Colors.black.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),

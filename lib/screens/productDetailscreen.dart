@@ -114,7 +114,9 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                       Text(
                         widget.title,
                         style: TextStyle(
-                          color: Color(0xff006E2F),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : const Color(0xff006E2F),
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
@@ -122,7 +124,9 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                       Text(
                         widget.price,
                         style: TextStyle(
-                          color: Color(0xff006E2F),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF22C55E)
+                              : const Color(0xff006E2F),
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -131,30 +135,40 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.star, color: Color(0xff735c00)),
-                      Icon(Icons.star, color: Color(0xff735c00)),
-                      Icon(Icons.star, color: Color(0xff735c00)),
-                      Icon(Icons.star, color: Color(0xff735c00)),
-                      Icon(
+                      const Icon(Icons.star, color: Color(0xff735c00)),
+                      const Icon(Icons.star, color: Color(0xff735c00)),
+                      const Icon(Icons.star, color: Color(0xff735c00)),
+                      const Icon(Icons.star, color: Color(0xff735c00)),
+                      const Icon(
                         Icons.star_border_outlined,
                         color: Color(0xff735c00),
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text(
                         widget.rating,
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey.shade400
+                              : Colors.grey,
+                          fontSize: 16,
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 25),
-                  Text(
+                  const SizedBox(height: 25),
+                  const Text(
                     "Description",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Text(
                     widget.description,
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade400
+                          : Colors.grey,
+                    ),
                   ),
                   SizedBox(height: 15),
                   ElevatedButton.icon(

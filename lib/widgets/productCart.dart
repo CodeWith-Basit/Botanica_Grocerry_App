@@ -27,16 +27,21 @@ class Productcart extends StatefulWidget {
 class _ProductcartState extends State<Productcart> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isFavorite = favorite.any((item) => item.title == widget.title);
     return Container(
       width: 180,
       height: 290,
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF191E1A) : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black26 : Colors.black12,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Padding(
@@ -88,10 +93,14 @@ class _ProductcartState extends State<Productcart> {
                     },
                     child: CircleAvatar(
                       radius: 15,
-                      backgroundColor: const Color(0xffdedfdf),
+                      backgroundColor: isDark
+                          ? const Color(0xFF2C352E)
+                          : const Color(0xffdedfdf),
                       child: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
+                        color: isFavorite
+                            ? Colors.red
+                            : (isDark ? Colors.white70 : Colors.grey),
                       ),
                     ),
                   ),
@@ -103,36 +112,53 @@ class _ProductcartState extends State<Productcart> {
             Row(
               children: [
                 const Icon(Icons.star, color: Color(0xff735c00)),
-                Text(widget.rating, style: const TextStyle(fontSize: 12)),
+                Text(
+                  widget.rating,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.black87,
+                  ),
+                ),
               ],
             ),
             Text(
               widget.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 18),
+              style: TextStyle(
+                fontSize: 18,
+                color: isDark ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               widget.weight,
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade400),
+              style: TextStyle(
+                fontSize: 16,
+                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   widget.price,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xff006E2F),
+                    color: isDark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xff006E2F),
                   ),
                 ),
                 GestureDetector(
                   onTap: widget.onAddToCart,
-                  child: const CircleAvatar(
-                    backgroundColor: Color(0xff006E2F),
+                  child: CircleAvatar(
+                    backgroundColor: isDark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xff006E2F),
                     radius: 20,
-                    child: Icon(Icons.add, color: Colors.white),
+                    child: const Icon(Icons.add, color: Colors.white),
                   ),
                 ),
               ],

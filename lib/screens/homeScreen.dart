@@ -211,27 +211,63 @@ class _HomescreenState extends State<Homescreen> {
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
               child: TextField(
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF191E1A)
+                      : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
-                    borderSide: BorderSide(width: 1, color: Colors.grey),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF273029)
+                          : Colors.grey.shade300,
+                    ),
                   ),
-                  prefixIcon: Icon(Icons.search),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF273029)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : Colors.grey,
+                  ),
                   labelText: "Search fresh groceries....",
-                  suffixIcon: Icon(Icons.tune, color: Color(0xff006E2F)),
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade500
+                        : Colors.grey,
+                  ),
+                  suffixIcon: Icon(
+                    Icons.tune,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xff006E2F),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 30),
-            Bannerslider(),
-            SizedBox(height: 25),
+            const SizedBox(height: 30),
+            const Bannerslider(),
+            const SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15),
                   child: Text(
                     "Categories",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -241,7 +277,12 @@ class _HomescreenState extends State<Homescreen> {
                   padding: const EdgeInsets.only(right: 15),
                   child: Text(
                     "View All",
-                    style: TextStyle(color: Color(0xff006E2F), fontSize: 18),
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xff006E2F),
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],
@@ -256,39 +297,65 @@ class _HomescreenState extends State<Homescreen> {
                     Category(
                       icons: Icon(
                         Icons.restaurant_outlined,
-                        color: Color(0xff006e2f),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xff006e2f),
                       ),
-                      containerColor: Color(0xffe1f4eb),
+                      containerColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF142419)
+                          : const Color(0xffe1f4eb),
                       title: "Veggies",
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Category(
-                      icons: Icon(Icons.apple, color: Color(0xff735c00)),
-                      containerColor: Color(0xfff3f1e1),
+                      icons: Icon(
+                        Icons.apple,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFFFF8A65)
+                            : const Color(0xff735c00),
+                      ),
+                      containerColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF251A18)
+                          : const Color(0xfff3f1e1),
                       title: "Fruits",
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Category(
                       icons: Icon(
                         Icons.water_drop_outlined,
-                        color: Color(0xff006e2f),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF4ADE80)
+                            : const Color(0xff006e2f),
                       ),
-                      containerColor: Color(0xffe1f4eb),
+                      containerColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF142419)
+                          : const Color(0xffe1f4eb),
                       title: "Dairy",
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Category(
                       icons: Icon(
                         Icons.breakfast_dining,
-                        color: Color(0xff6d7b6c),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFFD1D5DB)
+                            : const Color(0xff6d7b6c),
                       ),
-                      containerColor: Color(0xfff1f5f4),
+                      containerColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF1E241F)
+                          : const Color(0xfff1f5f4),
                       title: "Bakery",
                     ),
-                    SizedBox(width: 15),
+                    const SizedBox(width: 15),
                     Category(
-                      icons: Icon(Icons.wine_bar, color: Color(0xff006e2f)),
-                      containerColor: Color(0xffe1f4eb),
+                      icons: Icon(
+                        Icons.wine_bar,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xff006e2f),
+                      ),
+                      containerColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF142419)
+                          : const Color(0xffe1f4eb),
                       title: "Drinks",
                     ),
                   ],
@@ -299,8 +366,8 @@ class _HomescreenState extends State<Homescreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15),
                   child: Text(
                     "Special Discounts",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -308,19 +375,24 @@ class _HomescreenState extends State<Homescreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 15),
-                  child: Icon(Icons.arrow_forward, color: Color(0xff006E2F)),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF22C55E)
+                        : const Color(0xff006E2F),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            SizedBox(
+            const SizedBox(height: 10),
+            const SizedBox(
               height: 120,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: EdgeInsets.only(left: 20),
                       child: Discountcart(
                         img: "assets/images/grapes.jpg",
                         discount: "-15%",
@@ -362,12 +434,12 @@ class _HomescreenState extends State<Homescreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
+                const Padding(
+                  padding: EdgeInsets.only(left: 15),
                   child: Text(
                     "Popular Products",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -377,7 +449,12 @@ class _HomescreenState extends State<Homescreen> {
                   padding: const EdgeInsets.only(right: 15),
                   child: Text(
                     "See All",
-                    style: TextStyle(color: Color(0xff006E2F), fontSize: 18),
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xff006E2F),
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ],
