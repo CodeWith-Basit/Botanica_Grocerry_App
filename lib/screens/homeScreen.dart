@@ -4,13 +4,13 @@ import 'package:botanica/screens/savedScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:botanica/widgets/module.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:botanica/widgets/bannerSlider.dart';
 import 'package:botanica/widgets/category.dart';
 import 'package:botanica/widgets/discountCart.dart';
 import 'package:botanica/widgets/productCart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -46,11 +46,12 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+    final displayName =
+        user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!
         : (user?.email != null && user!.email!.isNotEmpty
-            ? user.email!.split('@')[0]
-            : "User");
+              ? user.email!.split('@')[0]
+              : "User");
     final email = user?.email ?? "No email provided";
     return Scaffold(
       drawer: Drawer(
@@ -60,7 +61,10 @@ class _HomescreenState extends State<Homescreen> {
             UserAccountsDrawerHeader(
               accountName: Text(
                 displayName,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
               accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
@@ -153,7 +157,7 @@ class _HomescreenState extends State<Homescreen> {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (context) =>  Signinscreen(),
+                      builder: (context) => Signinscreen(),
                     ),
                   );
                 },
