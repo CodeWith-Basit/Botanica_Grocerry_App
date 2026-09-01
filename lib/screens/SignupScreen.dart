@@ -22,7 +22,7 @@ class _SignupscreenState extends State<Signupscreen> {
 
   TextEditingController confirmPasswordController = TextEditingController();
 
-  Signup(context) async {
+  Future<void> signup() async {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
@@ -48,6 +48,7 @@ class _SignupscreenState extends State<Signupscreen> {
           );
       if (credential.user != null) {
         print('User signed up successfully');
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => Signinscreen()),
@@ -66,7 +67,7 @@ class _SignupscreenState extends State<Signupscreen> {
       }
     } catch (e) {
       print('Error signing up: $e');
-
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Invalid email or password $e'),
@@ -264,7 +265,7 @@ class _SignupscreenState extends State<Signupscreen> {
                       ),
                     ),
                     onPressed: () async {
-                      await Signup(context);
+                      await signup();
                     },
                     child: const Text(
                       "Create Account",

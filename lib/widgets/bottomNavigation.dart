@@ -17,13 +17,14 @@ class _BottomnavigationState extends State<Bottomnavigation> {
   late int activeTab;
   late List<int> tabHistory;
 
+  @override
   void initState() {
     super.initState();
     activeTab = widget.initialIndex;
     tabHistory = [widget.initialIndex];
   }
 
-  void changeTab(index) {
+  void changeTab(int index) {
     setState(() {
       activeTab = index;
       if (tabHistory.isEmpty || tabHistory.last != index) {

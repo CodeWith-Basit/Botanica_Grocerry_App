@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Signinscreen extends StatefulWidget {
-  Signinscreen({super.key});
+  const Signinscreen({super.key});
 
   @override
   State<Signinscreen> createState() => _SigninscreenState();
@@ -17,7 +17,7 @@ class _SigninscreenState extends State<Signinscreen> {
 
   TextEditingController passwordController = TextEditingController();
 
-  login(context) async {
+  Future<void> login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
     try {
@@ -31,6 +31,7 @@ class _SigninscreenState extends State<Signinscreen> {
       );
       if (credential.user != null) {
         print('User logged in successfully');
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => Bottomnavigation()),
@@ -49,6 +50,7 @@ class _SigninscreenState extends State<Signinscreen> {
       }
     } catch (e) {
       print('Error logging in: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Invalid email or password $e'),
@@ -187,7 +189,7 @@ class _SigninscreenState extends State<Signinscreen> {
                     ),
                   ),
                   onPressed: () async {
-                    await login(context);
+                    await login();
                   },
                   child: const Text(
                     "Sign In",
