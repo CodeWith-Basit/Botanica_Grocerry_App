@@ -59,9 +59,12 @@ class _BottomnavigationState extends State<Bottomnavigation> {
             changeTab(index);
           },
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Color(0xff006E2F),
+          backgroundColor: Theme.of(context).cardColor,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
           selectedFontSize: 16,
-          unselectedItemColor: Color(0xff3d4a3d),
+          unselectedItemColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey.shade400
+              : const Color(0xff3d4a3d),
           showUnselectedLabels: true,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

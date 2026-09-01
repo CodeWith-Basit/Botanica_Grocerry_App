@@ -1,5 +1,6 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -380,23 +381,30 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ListTile(
                       leading: Icon(
                         Icons.dark_mode,
-                        color: const Color.fromARGB(255, 75, 74, 74),
+                        color: ThemeController.isDarkMode
+                            ? const Color(0xFF22C55E)
+                            : const Color.fromARGB(255, 75, 74, 74),
                       ),
                       title: Text(
                         "Dark Appearance",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: ThemeController.isDarkMode
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                       ),
-                      subtitle: Text("Switch theme mode"),
+                      subtitle: const Text("Switch theme mode"),
 
                       trailing: Switch(
-                        value: darkMood,
+                        value: ThemeController.isDarkMode,
                         activeThumbColor: const Color(0xFFFFFFFF),
                         activeTrackColor: const Color(0xff006E2F),
                         inactiveThumbColor: Colors.grey,
                         inactiveTrackColor: Colors.grey[300],
                         onChanged: (value) {
                           setState(() {
-                            darkMood = value;
+                            ThemeController.toggleTheme(value);
                           });
                         },
                       ),
