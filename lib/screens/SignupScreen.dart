@@ -47,6 +47,7 @@ class _SignupscreenState extends State<Signupscreen> {
             password: passwordController.text,
           );
       if (credential.user != null) {
+        await credential.user!.updateDisplayName(name);
         print('User signed up successfully');
         if (!mounted) return;
         Navigator.pushReplacement(

@@ -1,6 +1,7 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,17 +18,24 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+        ? user.displayName!
+        : (user?.email != null && user!.email!.isNotEmpty
+            ? user.email!.split('@')[0]
+            : "User");
+    final email = user?.email ?? "No email provided";
     return Scaffold(
       drawer: Drawer(
         backgroundColor: Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: const Text(
-                "Robert Phillep",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              accountName: Text(
+                displayName,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              accountEmail: const Text("Robert@gmail.com"),
+              accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
                 child: CircleAvatar(
                   radius: 50,
@@ -204,15 +212,15 @@ class _ProfilescreenState extends State<Profilescreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Robert Phillep",
-                          style: TextStyle(
+                          displayName,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "Robert@gmail.com",
-                          style: TextStyle(fontSize: 18),
+                          email,
+                          style: const TextStyle(fontSize: 18),
                         ),
                         SizedBox(height: 8),
                         ElevatedButton.icon(

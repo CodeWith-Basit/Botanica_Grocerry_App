@@ -2,6 +2,7 @@ import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:botanica/widgets/shopCategory.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -10,17 +11,24 @@ class Shopscreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+        ? user.displayName!
+        : (user?.email != null && user!.email!.isNotEmpty
+            ? user.email!.split('@')[0]
+            : "User");
+    final email = user?.email ?? "No email provided";
     return Scaffold(
       drawer: Drawer(
         backgroundColor: Colors.white,
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: const Text(
-                "Robert Phillep",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              accountName: Text(
+                displayName,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              accountEmail: const Text("Robert@gmail.com"),
+              accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
                 child: CircleAvatar(
                   radius: 50,
