@@ -153,16 +153,18 @@ class _HomescreenState extends State<Homescreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute<void>(
-                      builder: (context) => Signinscreen(),
+                      builder: (context) => const Signinscreen(),
                     ),
+                    (route) => false,
                   );
                 },
-                icon: Icon(Icons.login),
-                label: Text("Logout"),
+                icon: const Icon(Icons.login),
+                label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff006E2F),
                   foregroundColor: Colors.white,

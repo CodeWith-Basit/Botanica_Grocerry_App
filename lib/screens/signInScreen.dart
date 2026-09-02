@@ -32,9 +32,10 @@ class _SigninscreenState extends State<Signinscreen> {
       if (credential.user != null) {
         print('User logged in successfully');
         if (!mounted) return;
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => Bottomnavigation()),
+          MaterialPageRoute(builder: (_) => const Bottomnavigation()),
+          (route) => false,
         );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

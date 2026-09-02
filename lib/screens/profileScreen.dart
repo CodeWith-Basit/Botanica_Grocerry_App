@@ -146,12 +146,14 @@ class _ProfilescreenState extends State<Profilescreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute<void>(
-                      builder: (context) => Signinscreen(),
+                      builder: (context) => const Signinscreen(),
                     ),
+                    (route) => false,
                   );
                 },
                 icon: const Icon(Icons.login),
@@ -570,7 +572,16 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const Signinscreen(),
+                    ),
+                    (route) => false,
+                  );
+                },
                 icon: const Icon(Icons.login),
                 label: const Text(
                   "Log Out of Account",

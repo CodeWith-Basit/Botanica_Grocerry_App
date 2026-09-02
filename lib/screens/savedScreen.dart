@@ -182,12 +182,14 @@ class _SavedscreenState extends State<Savedscreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (!context.mounted) return;
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute<void>(
-                      builder: (context) =>  Signinscreen(),
+                      builder: (context) => const Signinscreen(),
                     ),
+                    (route) => false,
                   );
                 },
                 icon: const Icon(Icons.login),
