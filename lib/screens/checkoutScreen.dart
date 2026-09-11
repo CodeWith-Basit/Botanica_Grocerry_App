@@ -110,7 +110,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade600,
+                  color: isDark
+                      ? AppThemes.darkTextSecondary
+                      : Colors.grey.shade600,
                   height: 1.5,
                 ),
               ),
@@ -159,7 +161,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? AppThemes.darkNeutralBg : const Color(0xFFF8F9FB),
+      backgroundColor: isDark
+          ? AppThemes.darkNeutralBg
+          : const Color(0xFFF8F9FB),
       appBar: AppBar(
         backgroundColor: isDark ? AppThemes.darkNeutralBg : Colors.white,
         elevation: 0,
@@ -218,7 +222,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                           Text(
                             'x${item.count}',
                             style: TextStyle(
-                              color: isDark ? AppThemes.darkTextSecondary : Colors.grey.shade500,
+                              color: isDark
+                                  ? AppThemes.darkTextSecondary
+                                  : Colors.grey.shade500,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -226,7 +232,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                             '\$${(item.price * item.count).toStringAsFixed(2)}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                              color: isDark
+                                  ? AppThemes.primaryGreen
+                                  : const Color(0xFF53B175),
                             ),
                           ),
                         ],
@@ -235,7 +243,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                   ),
                   Divider(
                     height: 20,
-                    color: isDark ? AppThemes.darkCardBorder : Colors.grey.shade200,
+                    color: isDark
+                        ? AppThemes.darkCardBorder
+                        : Colors.grey.shade200,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,7 +263,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                          color: isDark
+                              ? AppThemes.primaryGreen
+                              : const Color(0xFF53B175),
                         ),
                       ),
                     ],
@@ -274,8 +286,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                     label: 'Street Address',
                     hint: 'e.g. 123 Green Valley Ave',
                     icon: Icons.home_rounded,
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Address is required' : null,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'Address is required'
+                        : null,
                   ),
                   const SizedBox(height: 12),
                   _buildField(
@@ -308,13 +321,17 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                     value: 'card',
                     label: 'Credit / Debit Card',
                     icon: Icons.credit_card_rounded,
-                    color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                    color: isDark
+                        ? AppThemes.primaryGreen
+                        : const Color(0xFF53B175),
                   ),
                   _paymentTile(
                     value: 'cod',
                     label: 'Cash on Delivery',
                     icon: Icons.money_rounded,
-                    color: isDark ? AppThemes.secondaryGreen : const Color(0xFFF37A20),
+                    color: isDark
+                        ? AppThemes.secondaryGreen
+                        : const Color(0xFFF37A20),
                   ),
                 ],
               ),
@@ -344,13 +361,12 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                             onChanged: (v) {
                               final formatted = _formatCardNumber(v);
                               if (formatted != v) {
-                                _cardNumberCtrl.value =
-                                    TextEditingValue(
-                                      text: formatted,
-                                      selection: TextSelection.collapsed(
-                                        offset: formatted.length,
-                                      ),
-                                    );
+                                _cardNumberCtrl.value = TextEditingValue(
+                                  text: formatted,
+                                  selection: TextSelection.collapsed(
+                                    offset: formatted.length,
+                                  ),
+                                );
                               }
                             },
                             validator: (v) {
@@ -370,10 +386,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                             label: 'Cardholder Name',
                             hint: 'e.g. Jane Doe',
                             icon: Icons.person_rounded,
-                            validator: (v) =>
-                                v == null || v.trim().isEmpty
-                                    ? 'Cardholder name is required'
-                                    : null,
+                            validator: (v) => v == null || v.trim().isEmpty
+                                ? 'Cardholder name is required'
+                                : null,
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -402,9 +417,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                       _expiryCtrl.text = '$v/';
                                       _expiryCtrl.selection =
                                           TextSelection.fromPosition(
-                                            TextPosition(
-                                              offset: v.length + 1,
-                                            ),
+                                            TextPosition(offset: v.length + 1),
                                           );
                                     }
                                   },
@@ -424,7 +437,8 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                     LengthLimitingTextInputFormatter(3),
                                   ],
                                   validator: (v) {
-                                    if (v == null || v.isEmpty) return 'Required';
+                                    if (v == null || v.isEmpty)
+                                      return 'Required';
                                     if (v.length != 3) return 'Invalid';
                                     return null;
                                   },
@@ -447,10 +461,16 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 height: 56,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                    backgroundColor: isDark
+                        ? AppThemes.primaryGreen
+                        : const Color(0xFF53B175),
                     foregroundColor: Colors.white,
                     elevation: 4,
-                    shadowColor: (isDark ? AppThemes.primaryGreen : const Color(0xFF53B175)).withValues(alpha: 0.4),
+                    shadowColor:
+                        (isDark
+                                ? AppThemes.primaryGreen
+                                : const Color(0xFF53B175))
+                            .withValues(alpha: 0.4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -507,7 +527,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.06),
+            color: isDark
+                ? Colors.black26
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -521,7 +543,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
             children: [
               Icon(
                 icon,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xFF53B175),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xFF53B175),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -563,9 +587,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
       obscureText: obscureText,
       maxLines: maxLines,
       onChanged: onChanged,
-      style: TextStyle(
-        color: isDark ? Colors.white : const Color(0xFF181725),
-      ),
+      style: TextStyle(color: isDark ? Colors.white : const Color(0xFF181725)),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
