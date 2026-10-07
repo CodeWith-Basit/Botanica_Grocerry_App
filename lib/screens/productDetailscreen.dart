@@ -1,4 +1,5 @@
-import 'package:botanica/widgets/module.dart';
+import 'package:botanica/services/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Productdetailscreen extends StatefulWidget {
@@ -23,68 +24,66 @@ class Productdetailscreen extends StatefulWidget {
   State<Productdetailscreen> createState() => _ProductdetailscreenState();
 }
 
-int quantity = 1;
-
 class _ProductdetailscreenState extends State<Productdetailscreen> {
-  void _addToCart(String title, String img, double price) {
-    final alreadyExists = cart.any((item) => item.title == title);
-    if (alreadyExists) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title is already in your cart.'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    } else {
-      setState(() {
-        cart.add(Module(title: title, img: img, price: price, count: 1));
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title added to cart successfully!'),
-          backgroundColor: const Color(0xFF53B175),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
+  int quantity = 1;
 
   @override
   Widget build(BuildContext context) {
-    bool isFavorite = favorite.any((item) => item.title == widget.title);
+    final uid = CurrentUser.uid;
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           const Icon(Icons.share),
           const SizedBox(width: 25),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                if (isFavorite) {
-                  favorite.removeWhere((item) => item.title == widget.title);
-                } else {
-                  double parsedPrice = double.tryParse(
-                          widget.price.replaceAll(RegExp(r'[^\d.]'), '')) ??
-                      0.0;
-                  favorite.add(
-                    Module(
-                      title: widget.title,
-                      img: widget.img,
-                      price: parsedPrice,
-                      count: 1,
-                      isFavorite: true,
-                    ),
-                  );
-                }
-              });
+          StreamBuilder<DocumentSnapshot>(
+            stream: uid != null
+                ? FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(uid)
+                    .collection('favorite')
+                    .doc(widget.title)
+                    .snapshots()
+                : const Stream.empty(),
+            builder: (context, snapshot) {
+              final isFavorite = snapshot.hasData && snapshot.data!.exists;
+
+              return GestureDetector(
+                onTap: () async {
+                  if (uid == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please sign in first')),
+                    );
+                    return;
+                  }
+
+                  final favRef = FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uid)
+                      .collection('favorite')
+                      .doc(widget.title);
+
+                  if (isFavorite) {
+                    await favRef.delete();
+                  } else {
+                    await favRef.set({
+                      'title': widget.title,
+                      'img': widget.img,
+                      'price': widget.price,
+                      'count': 1,
+                      'isFavorite': true,
+                    });
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  ),
+                ),
+              );
             },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 15),
-              child: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.grey,
-              ),
-            ),
           ),
         ],
       ),
@@ -608,13 +607,52 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                             backgroundColor: Color(0xff006E2F),
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: () {
-                            _addToCart( 
-                              widget.title,
-                              widget.img,
-                              double.parse(widget.price.replaceAll('\$', '')),
-                            );
+                          onPressed: () async {
+                            final uid = CurrentUser.uid;
+                            if (uid == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please sign in first'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final parsedPrice =
+                                double.tryParse(
+                                  widget.price.replaceAll(
+                                    RegExp(r'[^\d.]'),
+                                    '',
+                                  ),
+                                ) ??
+                                0.0;
+
+                            // 1. Save to this user's Firestore cart
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(uid)
+                                .collection('cart')
+                                .doc(widget.title)
+                                .set({
+                                  'title': widget.title,
+                                  'img': widget.img,
+                                  'price': parsedPrice,
+                                  'count': quantity,
+                                });
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${widget.title} added to cart successfully!',
+                                  ),
+                                  backgroundColor: const Color(0xFF53B175),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            }
                           },
+
                           icon: Icon(Icons.shopping_basket_outlined),
                           label: Text(
                             "Add to Cart",

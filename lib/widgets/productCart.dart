@@ -1,4 +1,5 @@
-import 'package:botanica/widgets/module.dart';
+import 'package:botanica/services/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Productcart extends StatefulWidget {
@@ -28,7 +29,8 @@ class _ProductcartState extends State<Productcart> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    bool isFavorite = favorite.any((item) => item.title == widget.title);
+    final uid = CurrentUser.uid;
+
     return Container(
       width: 180,
       height: 290,
@@ -65,44 +67,60 @@ class _ProductcartState extends State<Productcart> {
                 Positioned(
                   top: 5,
                   right: 5,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isFavorite) {
-                          favorite.removeWhere(
-                            (item) => item.title == widget.title,
-                          );
-                        } else {
-                          double parsedPrice =
-                              double.tryParse(
-                                widget.price.replaceAll(RegExp(r'[^\d.]'), ''),
-                              ) ??
-                              0.0;
-                          favorite.add(
-                            Module(
-                              title: widget.title,
-                              img: widget.img,
-                              price: parsedPrice,
-                              count: 1,
-                              isFavorite: true,
-                            ),
-                          );
-                        }
-                      });
-                      widget.onFavoriteChanged?.call();
+                  child: StreamBuilder<DocumentSnapshot>(
+                    stream: uid != null
+                        ? FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .collection('favorite')
+                            .doc(widget.title)
+                            .snapshots()
+                        : const Stream.empty(),
+                    builder: (context, snapshot) {
+                      final isFav = snapshot.hasData && snapshot.data!.exists;
+
+                      return GestureDetector(
+                        onTap: () async {
+                          if (uid == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please sign in first')),
+                            );
+                            return;
+                          }
+
+                          final favRef = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(uid)
+                              .collection('favorite')
+                              .doc(widget.title);
+
+                          if (isFav) {
+                            await favRef.delete();
+                          } else {
+                            await favRef.set({
+                              'title': widget.title,
+                              'img': widget.img,
+                              'price': widget.price,
+                              'count': 1,
+                              'isFavorite': true,
+                            });
+                          }
+                          widget.onFavoriteChanged?.call();
+                        },
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundColor: isDark
+                              ? const Color(0xFF2C352E)
+                              : const Color(0xffdedfdf),
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: isFav
+                                ? Colors.red
+                                : (isDark ? Colors.white70 : Colors.grey),
+                          ),
+                        ),
+                      );
                     },
-                    child: CircleAvatar(
-                      radius: 15,
-                      backgroundColor: isDark
-                          ? const Color(0xFF2C352E)
-                          : const Color(0xffdedfdf),
-                      child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite
-                            ? Colors.red
-                            : (isDark ? Colors.white70 : Colors.grey),
-                      ),
-                    ),
                   ),
                 ),
               ],

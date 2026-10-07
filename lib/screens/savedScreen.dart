@@ -1,9 +1,10 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
-import 'package:botanica/widgets/module.dart';
 import 'package:botanica/widgets/savedProduct.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,30 +17,24 @@ class Savedscreen extends StatefulWidget {
 }
 
 class _SavedscreenState extends State<Savedscreen> {
-  void _addToCart(Module item) {
-    final alreadyExists = cart.any((cartItem) => cartItem.title == item.title);
-    if (alreadyExists) {
+  Future<void> _addToCart(String title, String img, String price) async {
+    final uid = CurrentUser.uid;
+    if (uid == null) return;
+
+    final parsedPrice =
+        double.tryParse(price.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0.0;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('cart')
+        .doc(title)
+        .set({'title': title, 'img': img, 'price': parsedPrice, 'count': 1});
+
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${item.title} is already in your cart.'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    } else {
-      setState(() {
-        cart.add(
-          Module(
-            title: item.title,
-            img: item.img,
-            price: item.price,
-            count: 1,
-            isFavorite: true,
-          ),
-        );
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${item.title} added to cart successfully!'),
+          content: Text('$title added to cart successfully!'),
           backgroundColor: const Color(0xFF53B175),
           duration: const Duration(seconds: 2),
         ),
@@ -47,30 +42,43 @@ class _SavedscreenState extends State<Savedscreen> {
     }
   }
 
-  void _removeFromFavorites(int index, Module item) {
-    setState(() {
-      favorite.removeAt(index);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${item.title} removed from favorites.'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  Future<void> _removeFromFavorites(String docId) async {
+    final uid = CurrentUser.uid;
+    if (uid == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('favorite')
+        .doc(docId)
+        .delete();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$docId removed from favorites.'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName != null && user!.displayName!.isNotEmpty
+    // final user = FirebaseAuth.instance.currentUser;
+    final user = CurrentUser.user;
+    final displayName =
+        user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!
         : (user?.email != null && user!.email!.isNotEmpty
-            ? user.email!.split('@')[0]
-            : "User");
+              ? user.email!.split('@')[0]
+              : "User");
     final email = user?.email ?? "No email provided";
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? AppThemes.darkNeutralBg : const Color(0xFFF9FAFB),
+      backgroundColor: isDark
+          ? AppThemes.darkNeutralBg
+          : const Color(0xFFF9FAFB),
       drawer: Drawer(
         backgroundColor: isDark ? const Color(0xFF18181A) : Colors.white,
         child: Column(
@@ -78,7 +86,10 @@ class _SavedscreenState extends State<Savedscreen> {
             UserAccountsDrawerHeader(
               accountName: Text(
                 displayName,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
               accountEmail: Text(email),
               currentAccountPicture: const CircleAvatar(
@@ -100,7 +111,9 @@ class _SavedscreenState extends State<Savedscreen> {
             ListTile(
               leading: Icon(
                 Icons.home_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "Home",
@@ -123,7 +136,9 @@ class _SavedscreenState extends State<Savedscreen> {
             ListTile(
               leading: Icon(
                 Icons.person_outline,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "My Profile",
@@ -146,7 +161,9 @@ class _SavedscreenState extends State<Savedscreen> {
             ListTile(
               leading: Icon(
                 Icons.login_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "SignUp",
@@ -167,7 +184,9 @@ class _SavedscreenState extends State<Savedscreen> {
             ListTile(
               leading: Icon(
                 Icons.settings_outlined,
-                color: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                color: isDark
+                    ? AppThemes.primaryGreen
+                    : const Color(0xff006E2F),
               ),
               title: Text(
                 "Settings",
@@ -195,7 +214,9 @@ class _SavedscreenState extends State<Savedscreen> {
                 icon: const Icon(Icons.login),
                 label: const Text("Logout"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? AppThemes.primaryGreen : const Color(0xff006E2F),
+                  backgroundColor: isDark
+                      ? AppThemes.primaryGreen
+                      : const Color(0xff006E2F),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
@@ -232,8 +253,20 @@ class _SavedscreenState extends State<Savedscreen> {
         ],
       ),
 
-      body: favorite.isEmpty
-          ? const Center(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: CurrentUser.uid != null
+            ? FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(CurrentUser.uid)
+                  .collection('favorite')
+                  .snapshots()
+            : const Stream.empty(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
               child: Text(
                 'No favorite items yet',
                 style: TextStyle(
@@ -242,55 +275,73 @@ class _SavedscreenState extends State<Savedscreen> {
                   color: Colors.grey,
                 ),
               ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Your Saved Items",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
+            );
+          }
+          final docs = snapshot.data!.docs;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Your Saved Items",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Items you've liked for later",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Items you've liked for later",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                   ),
-                  const SizedBox(height: 16),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: favorite.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.58,
-                    ),
-                    itemBuilder: (context, index) {
-                      final item = favorite[index];
-                      return Savedproduct(
-                        img: item.img,
-                        title: item.title,
-                        price: "\$${item.price.toStringAsFixed(2)}",
-                        weight: '/ pc',
-                        tag: index % 2 == 0 ? 'Organic' : 'Seasonal',
-                        onDelete: () => _removeFromFavorites(index, item),
-                        onAddToCart: () => _addToCart(item),
-                      );
-                    },
+                ),
+                // GridView displaying real-time favorite products from Firestore
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  // Use docs.length from Firestore instead of the local favorite list
+                  itemCount: docs.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.58,
                   ),
-                ],
-              ),
+                  itemBuilder: (context, index) {
+                    // Extract the product data map for the current document
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    final String title = data['title'] ?? '';
+                    final String img = data['img'] ?? '';
+                    final dynamic rawPrice = data['price'];
+                    final String priceString = rawPrice != null
+                        ? rawPrice.toString()
+                        : '0.0';
+
+                    return Savedproduct(
+                      img: img,
+                      title: title,
+                      // Ensure price has a '$' prefix for proper display
+                      price: priceString.startsWith('\$')
+                          ? priceString
+                          : "\$$priceString",
+                      weight: '/ pc',
+                      tag: index % 2 == 0 ? 'Organic' : 'Seasonal',
+                      // Delete using the document ID (docId is the title)
+                      onDelete: () => _removeFromFavorites(docs[index].id),
+                      // Add to this user's cart in Firestore
+                      onAddToCart: () => _addToCart(title, img, priceString),
+                    );
+                  },
+                ),
+              ],
             ),
+          );
+        },
+      ),
     );
   }
 }

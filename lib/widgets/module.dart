@@ -15,12 +15,3 @@ class Module {
 }
 
 List<Module> cart = [];
-List<Module> favorite = [];
-
-double getTotalprice() {
-  double total = 0;
-  for (var item in cart) {
-    total += item.price * item.count;
-  }
-  return total;
-}

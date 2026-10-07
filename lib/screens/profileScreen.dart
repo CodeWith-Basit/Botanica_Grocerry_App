@@ -1,5 +1,6 @@
 import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/theme/theme_controller.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,7 +20,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = CurrentUser.user;
     final displayName =
         user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!

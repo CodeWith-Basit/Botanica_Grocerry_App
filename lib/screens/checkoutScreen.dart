@@ -1,5 +1,6 @@
+import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/theme/theme_controller.dart';
-import 'package:botanica/widgets/module.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -52,21 +53,64 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     super.dispose();
   }
 
-  double get _total =>
-      cart.fold(0.0, (sum, item) => sum + item.price * item.count);
-
-  void _placeOrder() async {
+  Future<void> _placeOrder(List<QueryDocumentSnapshot> cartDocs, double total) async {
     if (!_formKey.currentState!.validate()) return;
+
+    final uid = CurrentUser.uid;
+    if (uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please sign in to place an order.')),
+      );
+      return;
+    }
 
     await _btnController.forward();
     await _btnController.reverse();
 
     setState(() => _isPlacing = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
-    if (!mounted) return;
-    setState(() => _isPlacing = false);
 
-    _showSuccessDialog();
+    try {
+      // 1. Prepare items map list from Firestore cart documents
+      final orderItems = cartDocs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      // 2. Save order to Firestore: users -> {uid} -> orders
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('orders')
+          .add({
+            'items': orderItems,
+            'total': total,
+            'paymentMethod': _paymentMethod,
+            'address': _addressCtrl.text.trim(),
+            'pin': _pinCtrl.text.trim(),
+            'placedAt': FieldValue.serverTimestamp(),
+            'status': 'Pending',
+          });
+
+      // 3. Clear the user's cart in Firestore
+      final cartCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('cart');
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (var doc in cartDocs) {
+        batch.delete(cartCollection.doc(doc.id));
+      }
+      await batch.commit();
+
+      if (!mounted) return;
+      setState(() => _isPlacing = false);
+
+      _showSuccessDialog();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isPlacing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to place order: $e')),
+      );
+    }
   }
 
   void _showSuccessDialog() {
@@ -129,7 +173,6 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                     ),
                   ),
                   onPressed: () {
-                    cart.clear();
                     Navigator.of(context)
                       ..pop()
                       ..pop();
@@ -160,6 +203,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final uid = CurrentUser.uid;
     return Scaffold(
       backgroundColor: isDark
           ? AppThemes.darkNeutralBg
@@ -184,54 +228,119 @@ class _CheckoutScreenState extends State<CheckoutScreen>
           ),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _sectionCard(
-              title: 'Order Summary',
-              icon: Icons.receipt_long_rounded,
-              child: Column(
-                children: [
-                  ...cart.map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: uid != null
+            ? FirebaseFirestore.instance
+                .collection('users')
+                .doc(uid)
+                .collection('cart')
+                .snapshots()
+            : const Stream.empty(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final cartDocs = snapshot.data?.docs ?? [];
+
+          // Calculate total dynamically from Firestore cart documents
+          double calculatedTotal = 0.0;
+          for (var doc in cartDocs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final double price = (data['price'] as num?)?.toDouble() ?? 0.0;
+            final int count = (data['count'] as num?)?.toInt() ?? 1;
+            calculatedTotal += price * count;
+          }
+
+          return Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _sectionCard(
+                  title: 'Order Summary',
+                  icon: Icons.receipt_long_rounded,
+                  child: Column(
+                    children: [
+                      ...cartDocs.map(
+                        (doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final String title = data['title'] ?? '';
+                          final String img = data['img'] ?? '';
+                          final double price = (data['price'] as num?)?.toDouble() ?? 0.0;
+                          final int count = (data['count'] as num?)?.toInt() ?? 1;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    img,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.image_not_supported, size: 50),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: isDark ? Colors.white : Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  'x$count',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? AppThemes.darkTextSecondary
+                                        : Colors.grey.shade500,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '\$${(price * count).toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? AppThemes.primaryGreen
+                                        : const Color(0xFF53B175),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      Divider(
+                        height: 20,
+                        color: isDark
+                            ? AppThemes.darkCardBorder
+                            : Colors.grey.shade200,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              item.img,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: isDark ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
                           Text(
-                            'x${item.count}',
-                            style: TextStyle(
-                              color: isDark
-                                  ? AppThemes.darkTextSecondary
-                                  : Colors.grey.shade500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '\$${(item.price * item.count).toStringAsFixed(2)}',
+                            'Total',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                          ),
+                          Text(
+                            '\$${calculatedTotal.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
                               color: isDark
                                   ? AppThemes.primaryGreen
                                   : const Color(0xFF53B175),
@@ -239,42 +348,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  Divider(
-                    height: 20,
-                    color: isDark
-                        ? AppThemes.darkCardBorder
-                        : Colors.grey.shade200,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Total',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                      ),
-                      Text(
-                        '\$${_total.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: isDark
-                              ? AppThemes.primaryGreen
-                              : const Color(0xFF53B175),
-                        ),
-                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
 
             _sectionCard(
               title: 'Delivery Address',
@@ -437,8 +514,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                     LengthLimitingTextInputFormatter(3),
                                   ],
                                   validator: (v) {
-                                    if (v == null || v.isEmpty)
+                                    if (v == null || v.isEmpty) {
                                       return 'Required';
+                                    }
                                     if (v.length != 3) return 'Invalid';
                                     return null;
                                   },
@@ -475,7 +553,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: _isPlacing ? null : _placeOrder,
+                  onPressed: _isPlacing
+                      ? null
+                      : () => _placeOrder(cartDocs, calculatedTotal),
                   child: _isPlacing
                       ? const SizedBox(
                           width: 24,
@@ -491,7 +571,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                             const Icon(Icons.shopping_bag_rounded, size: 22),
                             const SizedBox(width: 8),
                             Text(
-                              'Place Order  \$${_total.toStringAsFixed(2)}',
+                              'Place Order  \$${calculatedTotal.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -506,8 +586,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
             const SizedBox(height: 32),
           ],
         ),
-      ),
-    );
+      );
+    },
+  ),
+);
   }
 
   Widget _sectionCard({

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:botanica/screens/onBoardingscreen.dart';
+import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -24,8 +24,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _navigateNext() {
     if (!mounted) return;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
+    // final user = FirebaseAuth.instance.currentUser;
+    if (CurrentUser.isLoggedIn) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
           builder: (context) => const Bottomnavigation(initialIndex: 0),
@@ -33,9 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     } else {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(
-          builder: (context) => const Onboardingscreen(),
-        ),
+        MaterialPageRoute<void>(builder: (context) => const Onboardingscreen()),
       );
     }
   }

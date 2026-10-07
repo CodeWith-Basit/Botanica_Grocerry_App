@@ -2,12 +2,13 @@ import 'package:botanica/screens/SignupScreen.dart';
 import 'package:botanica/screens/productDetailscreen.dart';
 import 'package:botanica/screens/savedScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
+import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/widgets/bottomNavigation.dart';
-import 'package:botanica/widgets/module.dart';
 import 'package:botanica/widgets/bannerSlider.dart';
 import 'package:botanica/widgets/category.dart';
 import 'package:botanica/widgets/discountCart.dart';
 import 'package:botanica/widgets/productCart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,32 +21,58 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  void _addToCart(String title, String img, double price) {
-    final alreadyExists = cart.any((item) => item.title == title);
-    if (alreadyExists) {
+  // Save product to this specific user's Firestore cart
+  Future<void> _addToCart(String title, String img, double price) async {
+    final uid = CurrentUser.uid;
+    if (uid == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title is already in your cart.'),
-          duration: const Duration(seconds: 2),
-        ),
+        const SnackBar(content: Text('Please sign in first')),
       );
+      return;
+    }
+
+    // Reference to this user's item document in their cart
+    final cartDocRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('cart')
+        .doc(title);
+
+    final snapshot = await cartDocRef.get();
+
+    if (snapshot.exists) {
+      // Item is already in cart: inform user with a SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$title is already in your cart.'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     } else {
-      setState(() {
-        cart.add(Module(title: title, img: img, price: price, count: 1));
+      // If new item, create the document with count: 1
+      await cartDocRef.set({
+        'title': title,
+        'img': img,
+        'price': price,
+        'count': 1,
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$title added to cart successfully!'),
-          backgroundColor: const Color(0xFF53B175),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$title added to cart successfully!'),
+            backgroundColor: const Color(0xFF53B175),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = CurrentUser.user;
     final displayName =
         user?.displayName != null && user!.displayName!.isNotEmpty
         ? user.displayName!
