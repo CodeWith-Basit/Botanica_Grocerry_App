@@ -61,16 +61,30 @@ class _ProductcartState extends State<Productcart> {
               children: [
                 Stack(
                   children: [
-                    Container(
-                      height: 140,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        image: DecorationImage(
-                          image: AssetImage(widget.img),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: widget.img.startsWith('http')
+                          ? Image.network(
+                              widget.img,
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    height: 140,
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                            )
+                          : Image.asset(
+                              widget.img,
+                              height: 140,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                     ),
                     Positioned(
                       top: 5,

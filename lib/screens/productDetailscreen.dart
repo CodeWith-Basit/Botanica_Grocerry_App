@@ -121,13 +121,29 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
           children: [
             Container(
               height: 200,
-              margin: EdgeInsets.all(15),
-              decoration: BoxDecoration(
+              width: double.infinity,
+              margin: const EdgeInsets.all(15),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                  image: AssetImage(widget.img),
-                  fit: BoxFit.cover,
-                ),
+                child: widget.img.startsWith('http')
+                    ? Image.network(
+                        widget.img,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(
+                          height: 200,
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                        ),
+                      )
+                    : Image.asset(
+                        widget.img,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             Padding(

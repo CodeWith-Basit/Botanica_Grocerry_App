@@ -25,9 +25,9 @@ class _HomescreenState extends State<Homescreen> {
   Future<void> _addToCart(String title, String img, double price) async {
     final uid = CurrentUser.uid;
     if (uid == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please sign in first')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please sign in first')));
       return;
     }
 
@@ -633,6 +633,125 @@ class _HomescreenState extends State<Homescreen> {
                 ),
               ],
             ),
+
+            const SizedBox(height: 25),
+
+            // Firestore Dynamic Products Section (Loaded live from Firebase)
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                // If there are products added in Firebase, show them
+                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                  final docs = snapshot.data!.docs;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Featured from Store",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "${docs.length} items",
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(0xFF22C55E)
+                                    : const Color(0xff006E2F),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: docs.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 4,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 0.78,
+                              ),
+                          itemBuilder: (context, index) {
+                            final data =
+                                docs[index].data() as Map<String, dynamic>;
+
+                            final String title = data['title'] ?? 'Product';
+                            final String img =
+                                data['img'] ?? 'assets/images/apple.jpg';
+                            final dynamic rawPrice = data['price'];
+                            final String priceString = rawPrice != null
+                                ? rawPrice.toString()
+                                : '0.0';
+                            final String formattedPrice =
+                                priceString.startsWith('\$')
+                                ? priceString
+                                : "\$$priceString";
+                            final double priceValue =
+                                double.tryParse(
+                                  priceString.replaceAll(RegExp(r'[^\d.]'), ''),
+                                ) ??
+                                0.0;
+                            final String weight = data['weight'] ?? '1 pc';
+                            final String rating = (data['rating'] ?? '4.8')
+                                .toString();
+                            final String description =
+                                data['description'] ?? 'Fresh organic product.';
+
+                            return Productcart(
+                              img: img,
+                              rating: rating,
+                              title: title,
+                              weight: weight,
+                              price: formattedPrice,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Productdetailscreen(
+                                      img: img,
+                                      rating: "($rating)",
+                                      title: title,
+                                      weight: weight,
+                                      price: formattedPrice,
+                                      description: description,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onAddToCart: () =>
+                                  _addToCart(title, img, priceValue),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                // If no products in Firebase yet or still loading, don't show empty gaps
+                return const SizedBox.shrink();
+              },
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

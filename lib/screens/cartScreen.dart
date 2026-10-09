@@ -178,14 +178,23 @@ class _CartscreenState extends State<Cartscreen> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
-                                  img,
-                                  width: 75,
-                                  height: 75,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.image_not_supported, size: 75),
-                                ),
+                                child: img.startsWith('http')
+                                    ? Image.network(
+                                        img,
+                                        width: 75,
+                                        height: 75,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) =>
+                                            const Icon(Icons.image_not_supported, size: 75),
+                                      )
+                                    : Image.asset(
+                                        img,
+                                        width: 75,
+                                        height: 75,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) =>
+                                            const Icon(Icons.image_not_supported, size: 75),
+                                      ),
                               ),
                             ),
                             const SizedBox(width: 20),

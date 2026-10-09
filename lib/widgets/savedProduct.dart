@@ -48,12 +48,25 @@ class Savedproduct extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    img,
-                    height: 125,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: img.startsWith('http')
+                      ? Image.network(
+                          img,
+                          height: 125,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            height: 125,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
+                        )
+                      : Image.asset(
+                          img,
+                          height: 125,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 Positioned(
                   top: 6,
