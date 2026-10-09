@@ -48,11 +48,18 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
             builder: (context, snapshot) {
               final isFavorite = snapshot.hasData && snapshot.data!.exists;
 
-              return GestureDetector(
-                onTap: () async {
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                ),
+                onPressed: () async {
                   if (uid == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please sign in first')),
+                      const SnackBar(
+                        content: Text('Please sign in to save favorites'),
+                        duration: Duration(seconds: 2),
+                      ),
                     );
                     return;
                   }
@@ -63,25 +70,46 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                       .collection('favorite')
                       .doc(widget.title);
 
-                  if (isFavorite) {
-                    await favRef.delete();
-                  } else {
-                    await favRef.set({
-                      'title': widget.title,
-                      'img': widget.img,
-                      'price': widget.price,
-                      'count': 1,
-                      'isFavorite': true,
-                    });
+                  try {
+                    if (isFavorite) {
+                      await favRef.delete();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${widget.title} removed from favorites'),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      }
+                    } else {
+                      await favRef.set({
+                        'title': widget.title,
+                        'img': widget.img,
+                        'price': widget.price,
+                        'count': 1,
+                        'isFavorite': true,
+                      });
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${widget.title} added to favorites!'),
+                            backgroundColor: const Color(0xFF006E2F),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: ${e.toString()}'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   }
                 },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : Colors.grey,
-                  ),
-                ),
               );
             },
           ),
@@ -628,28 +656,39 @@ class _ProductdetailscreenState extends State<Productdetailscreen> {
                                 0.0;
 
                             // 1. Save to this user's Firestore cart
-                            await FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(uid)
-                                .collection('cart')
-                                .doc(widget.title)
-                                .set({
-                                  'title': widget.title,
-                                  'img': widget.img,
-                                  'price': parsedPrice,
-                                  'count': quantity,
-                                });
+                            try {
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(uid)
+                                  .collection('cart')
+                                  .doc(widget.title)
+                                  .set({
+                                    'title': widget.title,
+                                    'img': widget.img,
+                                    'price': parsedPrice,
+                                    'count': quantity,
+                                  });
 
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${widget.title} added to cart successfully!',
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${widget.title} added to cart successfully!',
+                                    ),
+                                    backgroundColor: const Color(0xFF53B175),
+                                    duration: const Duration(seconds: 2),
                                   ),
-                                  backgroundColor: const Color(0xFF53B175),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to add to cart: $e'),
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              }
                             }
                           },
 

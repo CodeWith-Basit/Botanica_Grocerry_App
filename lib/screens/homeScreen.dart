@@ -498,7 +498,12 @@ class _HomescreenState extends State<Homescreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: GestureDetector(
+                    child: Productcart(
+                      img: "assets/images/egg.jpg",
+                      rating: "4.7",
+                      title: "Egg",
+                      weight: "12 pack",
+                      price: "\$7.99",
                       onTap: () {
                         Navigator.push(
                           context,
@@ -515,15 +520,8 @@ class _HomescreenState extends State<Homescreen> {
                           ),
                         );
                       },
-                      child: Productcart(
-                        img: "assets/images/egg.jpg",
-                        rating: "4.7",
-                        title: "Egg",
-                        weight: "12 pack",
-                        price: "\$7.99",
-                        onAddToCart: () =>
-                            _addToCart("Egg", "assets/images/egg.jpg", 7.99),
-                      ),
+                      onAddToCart: () =>
+                          _addToCart("Egg", "assets/images/egg.jpg", 7.99),
                     ),
                   ),
                 ),
@@ -531,10 +529,15 @@ class _HomescreenState extends State<Homescreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: GestureDetector(
+                    child: Productcart(
+                      img: "assets/images/apple.jpg",
+                      rating: "3.4",
+                      title: "Fresh Apples",
+                      weight: "1kg Bag",
+                      price: "\$5.99",
                       onTap: () {
                         Navigator.push(
-                          (context),
+                          context,
                           MaterialPageRoute(
                             builder: (context) => Productdetailscreen(
                               img: "assets/images/apple.jpg",
@@ -548,17 +551,10 @@ class _HomescreenState extends State<Homescreen> {
                           ),
                         );
                       },
-                      child: Productcart(
-                        img: "assets/images/apple.jpg",
-                        rating: "3.4",
-                        title: "Fresh Apples",
-                        weight: "1kg Bag",
-                        price: "\$5.99",
-                        onAddToCart: () => _addToCart(
-                          "Fresh Apples",
-                          "assets/images/apple.jpg",
-                          5.99,
-                        ),
+                      onAddToCart: () => _addToCart(
+                        "Fresh Apples",
+                        "assets/images/apple.jpg",
+                        5.99,
                       ),
                     ),
                   ),
@@ -571,10 +567,15 @@ class _HomescreenState extends State<Homescreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: GestureDetector(
+                    child: Productcart(
+                      img: "assets/images/milk.jpg",
+                      rating: "5",
+                      title: "Organic Milk",
+                      weight: "1 Liter",
+                      price: "\$2.99",
                       onTap: () {
                         Navigator.push(
-                          (context),
+                          context,
                           MaterialPageRoute(
                             builder: (context) => Productdetailscreen(
                               img: "assets/images/milk.jpg",
@@ -588,17 +589,10 @@ class _HomescreenState extends State<Homescreen> {
                           ),
                         );
                       },
-                      child: Productcart(
-                        img: "assets/images/milk.jpg",
-                        rating: "5",
-                        title: "Organic Milk",
-                        weight: "1 Liter",
-                        price: "\$2.99",
-                        onAddToCart: () => _addToCart(
-                          "Organic Milk",
-                          "assets/images/milk.jpg",
-                          2.99,
-                        ),
+                      onAddToCart: () => _addToCart(
+                        "Organic Milk",
+                        "assets/images/milk.jpg",
+                        2.99,
                       ),
                     ),
                   ),
@@ -607,10 +601,15 @@ class _HomescreenState extends State<Homescreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: GestureDetector(
+                    child: Productcart(
+                      img: "assets/images/borocli.jpg",
+                      rating: "5",
+                      title: "Fresh Broccoli",
+                      weight: "500g",
+                      price: "\$1.99",
                       onTap: () {
                         Navigator.push(
-                          (context),
+                          context,
                           MaterialPageRoute(
                             builder: (context) => Productdetailscreen(
                               img: "assets/images/borocli.jpg",
@@ -624,17 +623,10 @@ class _HomescreenState extends State<Homescreen> {
                           ),
                         );
                       },
-                      child: Productcart(
-                        img: "assets/images/borocli.jpg",
-                        rating: "5",
-                        title: "Fresh Broccoli",
-                        weight: "500g",
-                        price: "\$1.99",
-                        onAddToCart: () => _addToCart(
-                          "Fresh Broccoli",
-                          "assets/images/borocli.jpg",
-                          1.99,
-                        ),
+                      onAddToCart: () => _addToCart(
+                        "Fresh Broccoli",
+                        "assets/images/borocli.jpg",
+                        1.99,
                       ),
                     ),
                   ),

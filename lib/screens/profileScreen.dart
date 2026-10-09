@@ -1,4 +1,5 @@
 import 'package:botanica/screens/SignupScreen.dart';
+import 'package:botanica/screens/orderHistoryScreen.dart';
 import 'package:botanica/screens/signInScreen.dart';
 import 'package:botanica/services/auth_service.dart';
 import 'package:botanica/theme/theme_controller.dart';
@@ -335,6 +336,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                 child: Column(
                   children: [
                     ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Orderhistoryscreen(),
+                          ),
+                        );
+                      },
                       leading: Icon(
                         Icons.history,
                         color: isDark
@@ -349,7 +358,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                         ),
                       ),
                       subtitle: Text(
-                        "24 past deliveries",
+                        "Track and view past orders",
                         style: TextStyle(
                           color: isDark
                               ? AppThemes.darkTextSecondary

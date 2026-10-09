@@ -53,7 +53,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     super.dispose();
   }
 
-  Future<void> _placeOrder(List<QueryDocumentSnapshot> cartDocs, double total) async {
+  Future<void> _placeOrder(
+    List<QueryDocumentSnapshot> cartDocs,
+    double total,
+  ) async {
     if (!_formKey.currentState!.validate()) return;
 
     final uid = CurrentUser.uid;
@@ -70,23 +73,30 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     setState(() => _isPlacing = true);
 
     try {
-      // 1. Prepare items map list from Firestore cart documents
-      final orderItems = cartDocs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      // 1. Prepare items list from Firestore cart documents
+      final orderItems = cartDocs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
 
-      // 2. Save order to Firestore: users -> {uid} -> orders
+      // 2. Create the order data map
+      final Map<String, dynamic> orderData = {
+        'userId': uid,
+        'userEmail': CurrentUser.user?.email ?? 'Unknown User',
+        'items': orderItems,
+        'total': total,
+        'paymentMethod': _paymentMethod,
+        'address': _addressCtrl.text.trim(),
+        'pin': _pinCtrl.text.trim(),
+        'placedAt': FieldValue.serverTimestamp(),
+        'status': 'Pending', // Admin can change this to 'Delivered'
+      };
+
+      // 3. Save to User's personal orders collection (for customer's history)
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .collection('orders')
-          .add({
-            'items': orderItems,
-            'total': total,
-            'paymentMethod': _paymentMethod,
-            'address': _addressCtrl.text.trim(),
-            'pin': _pinCtrl.text.trim(),
-            'placedAt': FieldValue.serverTimestamp(),
-            'status': 'Pending',
-          });
+          .add(orderData);
 
       // 3. Clear the user's cart in Firestore
       final cartCollection = FirebaseFirestore.instance
@@ -107,9 +117,9 @@ class _CheckoutScreenState extends State<CheckoutScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isPlacing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to place order: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
     }
   }
 
@@ -231,10 +241,10 @@ class _CheckoutScreenState extends State<CheckoutScreen>
       body: StreamBuilder<QuerySnapshot>(
         stream: uid != null
             ? FirebaseFirestore.instance
-                .collection('users')
-                .doc(uid)
-                .collection('cart')
-                .snapshots()
+                  .collection('users')
+                  .doc(uid)
+                  .collection('cart')
+                  .snapshots()
             : const Stream.empty(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -262,63 +272,67 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                   icon: Icons.receipt_long_rounded,
                   child: Column(
                     children: [
-                      ...cartDocs.map(
-                        (doc) {
-                          final data = doc.data() as Map<String, dynamic>;
-                          final String title = data['title'] ?? '';
-                          final String img = data['img'] ?? '';
-                          final double price = (data['price'] as num?)?.toDouble() ?? 0.0;
-                          final int count = (data['count'] as num?)?.toInt() ?? 1;
+                      ...cartDocs.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final String title = data['title'] ?? '';
+                        final String img = data['img'] ?? '';
+                        final double price =
+                            (data['price'] as num?)?.toDouble() ?? 0.0;
+                        final int count = (data['count'] as num?)?.toInt() ?? 1;
 
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    img,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.image_not_supported, size: 50),
-                                  ),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  img,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                        Icons.image_not_supported,
+                                        size: 50,
+                                      ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: isDark ? Colors.white : Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  'x$count',
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  title,
                                   style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
                                     color: isDark
-                                        ? AppThemes.darkTextSecondary
-                                        : Colors.grey.shade500,
+                                        ? Colors.white
+                                        : Colors.black87,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '\$${(price * count).toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? AppThemes.primaryGreen
-                                        : const Color(0xFF53B175),
-                                  ),
+                              ),
+                              Text(
+                                'x$count',
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppThemes.darkTextSecondary
+                                      : Colors.grey.shade500,
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '\$${(price * count).toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? AppThemes.primaryGreen
+                                      : const Color(0xFF53B175),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                       Divider(
                         height: 20,
                         color: isDark
@@ -353,243 +367,254 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                 ),
                 const SizedBox(height: 16),
 
-            _sectionCard(
-              title: 'Delivery Address',
-              icon: Icons.location_on_rounded,
-              child: Column(
-                children: [
-                  _buildField(
-                    controller: _addressCtrl,
-                    label: 'Street Address',
-                    hint: 'e.g. 123 Green Valley Ave',
-                    icon: Icons.home_rounded,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'Address is required'
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildField(
-                    controller: _pinCtrl,
-                    label: 'ZIP / Postal Code',
-                    hint: 'e.g. 94103',
-                    icon: Icons.pin_drop_rounded,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'ZIP code is required';
-                      }
-                      if (v.trim().length < 4) return 'Enter a valid ZIP code';
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            _sectionCard(
-              title: 'Payment Method',
-              icon: Icons.payment_rounded,
-              child: Column(
-                children: [
-                  _paymentTile(
-                    value: 'card',
-                    label: 'Credit / Debit Card',
-                    icon: Icons.credit_card_rounded,
-                    color: isDark
-                        ? AppThemes.primaryGreen
-                        : const Color(0xFF53B175),
-                  ),
-                  _paymentTile(
-                    value: 'cod',
-                    label: 'Cash on Delivery',
-                    icon: Icons.money_rounded,
-                    color: isDark
-                        ? AppThemes.secondaryGreen
-                        : const Color(0xFFF37A20),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              child: _paymentMethod == 'card'
-                  ? _sectionCard(
-                      key: const ValueKey('card_details'),
-                      title: 'Card Details',
-                      icon: Icons.lock_outline_rounded,
-                      child: Column(
-                        children: [
-                          _buildField(
-                            controller: _cardNumberCtrl,
-                            label: 'Card Number',
-                            hint: 'XXXX XXXX XXXX XXXX',
-                            icon: Icons.credit_card,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(16),
-                            ],
-                            onChanged: (v) {
-                              final formatted = _formatCardNumber(v);
-                              if (formatted != v) {
-                                _cardNumberCtrl.value = TextEditingValue(
-                                  text: formatted,
-                                  selection: TextSelection.collapsed(
-                                    offset: formatted.length,
-                                  ),
-                                );
-                              }
-                            },
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Card number is required';
-                              }
-                              final clean = v.replaceAll(' ', '');
-                              if (clean.length < 13) {
-                                return 'Invalid card number';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          _buildField(
-                            controller: _cardHolderCtrl,
-                            label: 'Cardholder Name',
-                            hint: 'e.g. Jane Doe',
-                            icon: Icons.person_rounded,
-                            validator: (v) => v == null || v.trim().isEmpty
-                                ? 'Cardholder name is required'
-                                : null,
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildField(
-                                  controller: _expiryCtrl,
-                                  label: 'Expiry Date',
-                                  hint: 'MM/YY',
-                                  icon: Icons.calendar_today_rounded,
-                                  keyboardType: TextInputType.datetime,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(4),
-                                  ],
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return 'Required';
-                                    }
-                                    if (v.length < 4) return 'MM/YY required';
-                                    return null;
-                                  },
-                                  onChanged: (v) {
-                                    if (v.length == 2 &&
-                                        !_expiryCtrl.text.endsWith('/')) {
-                                      _expiryCtrl.text = '$v/';
-                                      _expiryCtrl.selection =
-                                          TextSelection.fromPosition(
-                                            TextPosition(offset: v.length + 1),
-                                          );
-                                    }
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildField(
-                                  controller: _cvvCtrl,
-                                  label: 'CVV',
-                                  hint: '• • •',
-                                  icon: Icons.lock_rounded,
-                                  keyboardType: TextInputType.number,
-                                  obscureText: true,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(3),
-                                  ],
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return 'Required';
-                                    }
-                                    if (v.length != 3) return 'Invalid';
-                                    return null;
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                _sectionCard(
+                  title: 'Delivery Address',
+                  icon: Icons.location_on_rounded,
+                  child: Column(
+                    children: [
+                      _buildField(
+                        controller: _addressCtrl,
+                        label: 'Street Address',
+                        hint: 'e.g. 123 Green Valley Ave',
+                        icon: Icons.home_rounded,
+                        validator: (v) => v == null || v.trim().isEmpty
+                            ? 'Address is required'
+                            : null,
                       ),
-                    )
-                  : const SizedBox.shrink(key: ValueKey('cod')),
-            ),
-
-            const SizedBox(height: 24),
-
-            ScaleTransition(
-              scale: _btnScale,
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? AppThemes.primaryGreen
-                        : const Color(0xFF53B175),
-                    foregroundColor: Colors.white,
-                    elevation: 4,
-                    shadowColor:
-                        (isDark
-                                ? AppThemes.primaryGreen
-                                : const Color(0xFF53B175))
-                            .withValues(alpha: 0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                      const SizedBox(height: 12),
+                      _buildField(
+                        controller: _pinCtrl,
+                        label: 'ZIP / Postal Code',
+                        hint: 'e.g. 94103',
+                        icon: Icons.pin_drop_rounded,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return 'ZIP code is required';
+                          }
+                          if (v.trim().length < 4) {
+                            return 'Enter a valid ZIP code';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
-                  onPressed: _isPlacing
-                      ? null
-                      : () => _placeOrder(cartDocs, calculatedTotal),
-                  child: _isPlacing
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
+                ),
+
+                const SizedBox(height: 16),
+
+                _sectionCard(
+                  title: 'Payment Method',
+                  icon: Icons.payment_rounded,
+                  child: Column(
+                    children: [
+                      _paymentTile(
+                        value: 'card',
+                        label: 'Credit / Debit Card',
+                        icon: Icons.credit_card_rounded,
+                        color: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xFF53B175),
+                      ),
+                      _paymentTile(
+                        value: 'cod',
+                        label: 'Cash on Delivery',
+                        icon: Icons.money_rounded,
+                        color: isDark
+                            ? AppThemes.secondaryGreen
+                            : const Color(0xFFF37A20),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _paymentMethod == 'card'
+                      ? _sectionCard(
+                          key: const ValueKey('card_details'),
+                          title: 'Card Details',
+                          icon: Icons.lock_outline_rounded,
+                          child: Column(
+                            children: [
+                              _buildField(
+                                controller: _cardNumberCtrl,
+                                label: 'Card Number',
+                                hint: 'XXXX XXXX XXXX XXXX',
+                                icon: Icons.credit_card,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(16),
+                                ],
+                                onChanged: (v) {
+                                  final formatted = _formatCardNumber(v);
+                                  if (formatted != v) {
+                                    _cardNumberCtrl.value = TextEditingValue(
+                                      text: formatted,
+                                      selection: TextSelection.collapsed(
+                                        offset: formatted.length,
+                                      ),
+                                    );
+                                  }
+                                },
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Card number is required';
+                                  }
+                                  final clean = v.replaceAll(' ', '');
+                                  if (clean.length < 13) {
+                                    return 'Invalid card number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              _buildField(
+                                controller: _cardHolderCtrl,
+                                label: 'Cardholder Name',
+                                hint: 'e.g. Jane Doe',
+                                icon: Icons.person_rounded,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? 'Cardholder name is required'
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildField(
+                                      controller: _expiryCtrl,
+                                      label: 'Expiry Date',
+                                      hint: 'MM/YY',
+                                      icon: Icons.calendar_today_rounded,
+                                      keyboardType: TextInputType.datetime,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(4),
+                                      ],
+                                      validator: (v) {
+                                        if (v == null || v.isEmpty) {
+                                          return 'Required';
+                                        }
+                                        if (v.length < 4) {
+                                          return 'MM/YY required';
+                                        }
+                                        return null;
+                                      },
+                                      onChanged: (v) {
+                                        if (v.length == 2 &&
+                                            !_expiryCtrl.text.endsWith('/')) {
+                                          _expiryCtrl.text = '$v/';
+                                          _expiryCtrl.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset: v.length + 1,
+                                                ),
+                                              );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: _buildField(
+                                      controller: _cvvCtrl,
+                                      label: 'CVV',
+                                      hint: '• • •',
+                                      icon: Icons.lock_rounded,
+                                      keyboardType: TextInputType.number,
+                                      obscureText: true,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(3),
+                                      ],
+                                      validator: (v) {
+                                        if (v == null || v.isEmpty) {
+                                          return 'Required';
+                                        }
+                                        if (v.length != 3) return 'Invalid';
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.shopping_bag_rounded, size: 22),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Place Order  \$${calculatedTotal.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                      : const SizedBox.shrink(key: ValueKey('cod')),
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 32),
-          ],
-        ),
-      );
-    },
-  ),
-);
+                const SizedBox(height: 24),
+
+                ScaleTransition(
+                  scale: _btnScale,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDark
+                            ? AppThemes.primaryGreen
+                            : const Color(0xFF53B175),
+                        foregroundColor: Colors.white,
+                        elevation: 4,
+                        shadowColor:
+                            (isDark
+                                    ? AppThemes.primaryGreen
+                                    : const Color(0xFF53B175))
+                                .withValues(alpha: 0.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: _isPlacing
+                          ? null
+                          : () => _placeOrder(cartDocs, calculatedTotal),
+                      child: _isPlacing
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.shopping_bag_rounded,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Place Order  \$${calculatedTotal.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _sectionCard({

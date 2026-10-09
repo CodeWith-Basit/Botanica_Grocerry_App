@@ -10,6 +10,8 @@ class Productcart extends StatefulWidget {
   final String price;
   final VoidCallback onAddToCart;
   final VoidCallback? onFavoriteChanged;
+  final VoidCallback? onTap;
+
   const Productcart({
     super.key,
     required this.img,
@@ -19,6 +21,7 @@ class Productcart extends StatefulWidget {
     required this.price,
     required this.onAddToCart,
     this.onFavoriteChanged,
+    this.onTap,
   });
 
   @override
@@ -46,142 +49,203 @@ class _ProductcartState extends State<Productcart> {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: widget.onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 140,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      image: AssetImage(widget.img),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 5,
-                  right: 5,
-                  child: StreamBuilder<DocumentSnapshot>(
-                    stream: uid != null
-                        ? FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(uid)
-                            .collection('favorite')
-                            .doc(widget.title)
-                            .snapshots()
-                        : const Stream.empty(),
-                    builder: (context, snapshot) {
-                      final isFav = snapshot.hasData && snapshot.data!.exists;
-
-                      return GestureDetector(
-                        onTap: () async {
-                          if (uid == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please sign in first')),
-                            );
-                            return;
-                          }
-
-                          final favRef = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(uid)
-                              .collection('favorite')
-                              .doc(widget.title);
-
-                          if (isFav) {
-                            await favRef.delete();
-                          } else {
-                            await favRef.set({
-                              'title': widget.title,
-                              'img': widget.img,
-                              'price': widget.price,
-                              'count': 1,
-                              'isFavorite': true,
-                            });
-                          }
-                          widget.onFavoriteChanged?.call();
-                        },
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: isDark
-                              ? const Color(0xFF2C352E)
-                              : const Color(0xffdedfdf),
-                          child: Icon(
-                            isFav ? Icons.favorite : Icons.favorite_border,
-                            color: isFav
-                                ? Colors.red
-                                : (isDark ? Colors.white70 : Colors.grey),
-                          ),
+                Stack(
+                  children: [
+                    Container(
+                      height: 140,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        image: DecorationImage(
+                          image: AssetImage(widget.img),
+                          fit: BoxFit.cover,
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: StreamBuilder<DocumentSnapshot>(
+                        stream: uid != null
+                            ? FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(uid)
+                                  .collection('favorite')
+                                  .doc(widget.title)
+                                  .snapshots()
+                            : const Stream.empty(),
+                        builder: (context, snapshot) {
+                          final isFav =
+                              snapshot.hasData && snapshot.data!.exists;
 
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.star, color: Color(0xff735c00)),
-                Text(
-                  widget.rating,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.black87,
-                  ),
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () async {
+                                if (uid == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Please sign in to save favorites',
+                                      ),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                final favRef = FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(uid)
+                                    .collection('favorite')
+                                    .doc(widget.title);
+
+                                try {
+                                  if (isFav) {
+                                    await favRef.delete();
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${widget.title} removed from favorites',
+                                          ),
+                                          duration: const Duration(seconds: 1),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    await favRef.set({
+                                      'title': widget.title,
+                                      'img': widget.img,
+                                      'price': widget.price,
+                                      'count': 1,
+                                      'isFavorite': true,
+                                    });
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${widget.title} added to favorites!',
+                                          ),
+                                          backgroundColor: const Color(
+                                            0xFF006E2F,
+                                          ),
+                                          duration: const Duration(seconds: 1),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                  widget.onFavoriteChanged?.call();
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Error: ${e.toString()}'),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF2C352E)
+                                      : const Color(0xffdedfdf),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  isFav
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 18,
+                                  color: isFav
+                                      ? Colors.red
+                                      : (isDark ? Colors.white70 : Colors.grey),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            Text(
-              widget.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 18,
-                color: isDark ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              widget.weight,
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Color(0xff735c00)),
+                    Text(
+                      widget.rating,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.grey.shade400 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
                 Text(
-                  widget.price,
+                  widget.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 18,
+                    color: isDark ? Colors.white : Colors.black87,
                     fontWeight: FontWeight.bold,
-                    color: isDark
-                        ? const Color(0xFF22C55E)
-                        : const Color(0xff006E2F),
                   ),
                 ),
-                GestureDetector(
-                  onTap: widget.onAddToCart,
-                  child: CircleAvatar(
-                    backgroundColor: isDark
-                        ? const Color(0xFF22C55E)
-                        : const Color(0xff006E2F),
-                    radius: 20,
-                    child: const Icon(Icons.add, color: Colors.white),
+                Text(
+                  widget.weight,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.price,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xff006E2F),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: widget.onAddToCart,
+                      child: CircleAvatar(
+                        backgroundColor: isDark
+                            ? const Color(0xFF22C55E)
+                            : const Color(0xff006E2F),
+                        radius: 20,
+                        child: const Icon(Icons.add, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
